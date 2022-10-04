@@ -25,6 +25,9 @@ class Boid
    KinematicMovement kinematic;
    PVector target;
    
+   float v = 0;
+   float radius = 100; // waypoint tolerance
+   
    Boid(PVector position, float heading, float max_speed, float max_rotational_speed, float acceleration, float rotational_acceleration)
    {
      this.kinematic = new KinematicMovement(position, heading, max_speed, max_rotational_speed);
@@ -46,9 +49,21 @@ class Boid
         if (abs(dr) < 0) 
            rv = 0;
         // Linear velocity
-        float v = kinematic.max_speed;
-        if (PVector.sub(kinematic.position, target).mag() < 50)
-           v = 0;
+        if (v < kinematic.max_speed)
+           //v += acceleration*dt; // TODO: accelerate FASTER bro
+           v += 20*dt; // note: dt makes it CRAWL when it starts; 4 is ok but it doesn't ACCELERATE
+        if (PVector.sub(kinematic.position, target).mag() < radius) {
+          println("within range " + v);
+          if ( v > 4) {
+             //v = 0;
+             //v -= acceleration*dt;
+             v -= acceleration*dt * 40;
+             //println(v);
+          } else {
+            v = 0; // set to 0
+            kinematic.setSpeed(0,0);
+          }            
+        }
         kinematic.increaseSpeed(v, rv);
      }
      
@@ -74,6 +89,12 @@ class Boid
        c.draw();
      }
      
+     // Radius for clicks
+     if(target != null) {
+       fill(0, 255, 0, 80);
+       circle(target.x, target.y, radius); 
+     }
+     
      fill(255);
      noStroke(); 
      float x = kinematic.position.x;
@@ -92,6 +113,7 @@ class Boid
      float x2p = x + (BOID_SIZE/2)*sin(r);
      float y2p = y - (BOID_SIZE/2)*cos(r);
      triangle(xp, yp, x1p, y1p, x2p, y2p);
+     
    } 
    
    void seek(PVector target)
@@ -105,4 +127,5 @@ class Boid
       this.target = waypoints.get(0);
       
    }
+   
 }
