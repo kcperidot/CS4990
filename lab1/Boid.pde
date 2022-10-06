@@ -26,7 +26,7 @@ class Boid
    PVector target;
    
    float v = 0;
-   float radius = 100; // waypoint tolerance
+   float radius = 50; // waypoint tolerance
    
    Boid(PVector position, float heading, float max_speed, float max_rotational_speed, float acceleration, float rotational_acceleration)
    {
@@ -49,15 +49,15 @@ class Boid
         if (abs(dr) < 0) 
            rv = 0;
         // Linear velocity
-        if (v < kinematic.max_speed)
+        if (kinematic.getSpeed() < kinematic.max_speed)
            //v += acceleration*dt; // TODO: accelerate FASTER bro
-           v += 20*dt; // note: dt makes it CRAWL when it starts; 4 is ok but it doesn't ACCELERATE
+           v += 5*dt; // note: dt makes it CRAWL when it starts; 4 is ok but it doesn't ACCELERATE
         if (PVector.sub(kinematic.position, target).mag() < radius) {
           println("within range " + v);
-          if ( v > 4) {
+          if ( kinematic.getSpeed() > 10) {
              //v = 0;
-             //v -= acceleration*dt;
-             v -= acceleration*dt * 40;
+             v -= acceleration*dt * 20;
+             rv -= acceleration*dt * 10;
              //println(v);
           } else {
             v = 0; // set to 0
