@@ -26,7 +26,7 @@ class Boid
    PVector target;
    
    float v = 0;
-   float radius = 50; // waypoint tolerance
+   float radius = 70; // waypoint tolerance
    
    Boid(PVector position, float heading, float max_speed, float max_rotational_speed, float acceleration, float rotational_acceleration)
    {
@@ -91,8 +91,13 @@ class Boid
      
      // Radius for clicks
      if(target != null) {
+       // slowdown tolerance
        fill(0, 255, 0, 80);
        circle(target.x, target.y, radius); 
+       
+       // target
+       fill(50, 255, 50);
+       circle(target.x, target.y, 5); 
      }
      
      fill(255);
