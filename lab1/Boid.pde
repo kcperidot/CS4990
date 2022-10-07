@@ -27,6 +27,7 @@ class Boid
    
    float v = 0;
    float radius = 70; // waypoint tolerance
+   ArrayList<PVector> waypoints;   
    
    Boid(PVector position, float heading, float max_speed, float max_rotational_speed, float acceleration, float rotational_acceleration)
    {
@@ -40,7 +41,8 @@ class Boid
    {
      if (target != null)
      {  
-        // TODO: Implement seek here      
+        // TODO: Implement seek here   
+        
         // Rotational velocity
         float rv = kinematic.max_speed;
         float tr = atan2(target.y - kinematic.position.y, target.x - kinematic.position.x);
@@ -50,16 +52,17 @@ class Boid
            rv = 0;
         // Linear velocity
         if (kinematic.getSpeed() < kinematic.max_speed)
-           //v += acceleration*dt; // TODO: accelerate FASTER bro
            v += 5*dt; // note: dt makes it CRAWL when it starts; 4 is ok but it doesn't ACCELERATE
         if (PVector.sub(kinematic.position, target).mag() < radius) {
-          println("within range " + v);
-          if ( kinematic.getSpeed() > 10) {
-             //v = 0;
+          if ( kinematic.getSpeed() > 20) {
              v -= acceleration*dt * 20;
              rv -= acceleration*dt * 10;
-             //println(v);
           } else {
+            if(waypoints.size() > 1) {
+              waypoints.remove(0);
+              seek(waypoints.get(0));
+              print("Aqui");
+            }
             v = 0; // set to 0
             kinematic.setSpeed(0,0);
           }            
@@ -99,6 +102,12 @@ class Boid
        fill(50, 255, 50);
        circle(target.x, target.y, 5); 
      }
+     if(waypoints != null) {
+       for(int i = 1; i < waypoints.size(); i++) {
+         fill(0, 255, 0, 50);
+         circle(waypoints.get(i).x, waypoints.get(i).y, radius); 
+       }
+     }
      
      fill(255);
      noStroke(); 
@@ -130,6 +139,7 @@ class Boid
    {
       // TODO: change to follow *all* waypoints
       this.target = waypoints.get(0);
+      this.waypoints = waypoints;
       
    }
    
