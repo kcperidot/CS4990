@@ -61,7 +61,6 @@ class Boid
             if(waypoints.size() > 1) {
               waypoints.remove(0);
               seek(waypoints.get(0));
-              print("Aqui");
             }
             v = 0; // set to 0
             kinematic.setSpeed(0,0);
