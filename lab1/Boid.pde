@@ -58,7 +58,7 @@ class Boid
              v -= acceleration*dt * 20;
              rv -= acceleration*dt * 10;
           } else {
-            if(waypoints.size() > 1) {
+            if(waypoints != null && waypoints.size() > 1) {
               waypoints.remove(0);
               seek(waypoints.get(0));
             }
