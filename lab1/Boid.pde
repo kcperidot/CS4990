@@ -26,7 +26,7 @@ class Boid
    PVector target;
    
    float v = 0;
-   float radius = 30; // waypoint tolerance
+   float radius = 10; // waypoint tolerance
    ArrayList<PVector> waypoints;   
    
    Boid(PVector position, float heading, float max_speed, float max_rotational_speed, float acceleration, float rotational_acceleration)
@@ -53,22 +53,24 @@ class Boid
         // Linear velocity
         if (kinematic.getSpeed() < kinematic.max_speed) // increase speed
            v += 5*dt; // note: dt makes it CRAWL when it starts; 4 is ok but it doesn't ACCELERATE
-        if (kinematic.getSpeed() > 0 && PVector.sub(kinematic.position, target).mag() < radius) { // if within range
+        //if (kinematic.getSpeed() > 0 && PVector.sub(kinematic.position, target).mag() < radius) { // if within range
+        if (PVector.sub(kinematic.position, target).mag() < radius) { // if within range
           print("h");
-          if ( kinematic.getSpeed() > rv) { // if speed is greater than decreasing factor
+          if ( kinematic.getSpeed() > radius) {
              print("a");
-             v -= acceleration*dt * radius*1.5;
+             v -= acceleration*dt * radius;
              rv -= acceleration*dt * 10;
-          } else { // else speed is less than (i.e. keep increase)
+          } //else { // else speed is less than (i.e. keep increase)
             print("b");
-            if(waypoints != null && waypoints.size() > 1) {
+            if(waypoints != null && waypoints.size() > 1) { // if there are waypoints, go to next one
               waypoints.remove(0);
               seek(waypoints.get(0));
             } else { // no more waypoints (i.e. stop)
               v = 0; // set to 0
+              rv = 0;
               kinematic.setSpeed(0,0);
             }
-          }            
+          //}            
         }
         println(kinematic.getSpeed(), v);
         kinematic.increaseSpeed(v, rv);
