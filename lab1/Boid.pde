@@ -55,7 +55,7 @@ class Boid
            v += 5*dt; // note: dt makes it CRAWL when it starts; 4 is ok but it doesn't ACCELERATE
         if (kinematic.getSpeed() > 0 && PVector.sub(kinematic.position, target).mag() < radius) { // if within range
           print("h");
-          if ( kinematic.getSpeed() > radius*1.5) { // if speed is greater than decreasing factor
+          if ( kinematic.getSpeed() > rv) { // if speed is greater than decreasing factor
              print("a");
              v -= acceleration*dt * radius*1.5;
              rv -= acceleration*dt * 10;
