@@ -26,7 +26,7 @@ class Boid
    PVector target;
    
    float v = 0;
-   float radius = 70; // waypoint tolerance
+   float radius = 30; // waypoint tolerance
    ArrayList<PVector> waypoints;   
    
    Boid(PVector position, float heading, float max_speed, float max_rotational_speed, float acceleration, float rotational_acceleration)
@@ -48,24 +48,29 @@ class Boid
         float tr = atan2(target.y - kinematic.position.y, target.x - kinematic.position.x);
         float dr = normalize_angle_left_right(tr - kinematic.getHeading());
         if (dr < 0) rv = -kinematic.max_speed;
-        if (abs(dr) < 0) 
-           rv = 0;
+        //if (abs(dr) < 0)  // what even is this
+        //   rv = 0;
         // Linear velocity
-        if (kinematic.getSpeed() < kinematic.max_speed)
+        if (kinematic.getSpeed() < kinematic.max_speed) // increase speed
            v += 5*dt; // note: dt makes it CRAWL when it starts; 4 is ok but it doesn't ACCELERATE
-        if (PVector.sub(kinematic.position, target).mag() < radius) {
-          if ( kinematic.getSpeed() > 20) {
-             v -= acceleration*dt * 20;
+        if (kinematic.getSpeed() > 0 && PVector.sub(kinematic.position, target).mag() < radius) { // if within range
+          print("h");
+          if ( kinematic.getSpeed() > radius*1.5) { // if speed is greater than decreasing factor
+             print("a");
+             v -= acceleration*dt * radius*1.5;
              rv -= acceleration*dt * 10;
-          } else {
+          } else { // else speed is less than (i.e. keep increase)
+            print("b");
             if(waypoints != null && waypoints.size() > 1) {
               waypoints.remove(0);
               seek(waypoints.get(0));
+            } else { // no more waypoints (i.e. stop)
+              v = 0; // set to 0
+              kinematic.setSpeed(0,0);
             }
-            v = 0; // set to 0
-            kinematic.setSpeed(0,0);
           }            
         }
+        println(kinematic.getSpeed(), v);
         kinematic.increaseSpeed(v, rv);
      }
      

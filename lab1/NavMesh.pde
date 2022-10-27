@@ -18,6 +18,8 @@ class Node
 
 class NavMesh
 {   
+  Node[] nodes = {};
+  
    void bake(Map map)
    {
        /// generate the graph you need for pathfinding
