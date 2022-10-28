@@ -27,7 +27,7 @@ class Boid
    
    float v = 0;
    float radius = 10; // waypoint tolerance
-   float slowdown = radius * 7;
+   float slowdown = radius * 10; // *7;
    ArrayList<PVector> waypoints;   
    
    Boid(PVector position, float heading, float max_speed, float max_rotational_speed, float acceleration, float rotational_acceleration)
@@ -44,57 +44,41 @@ class Boid
      {  
         // TODO: Implement seek here   
         
+        // v is preserved between calls!!!!!
+        
         // Rotational velocity
         float rv = kinematic.max_speed;
         float tr = atan2(target.y - kinematic.position.y, target.x - kinematic.position.x);
         float dr = normalize_angle_left_right(tr - kinematic.getHeading());
         if (dr < 0) rv = -kinematic.max_speed;
-        //if (abs(dr) < 0)  // what even is this
-        //   rv = 0;
+        
         // Linear velocity
         if (kinematic.getSpeed() < kinematic.max_speed) { // increase speed
-           v += 5*dt; // note: dt makes it CRAWL when it starts; 4 is ok but it doesn't ACCELERATE
+           v += 4*dt;
         }
-        //if (kinematic.getSpeed() > 0 && PVector.sub(kinematic.position, target).mag() < radius) { // if within range
         if (PVector.sub(kinematic.position, target).mag() < slowdown) { // if within slowdown range
         
-          /*print("h");
-          if ( kinematic.getSpeed() > radius) {
-             print("a");
-             v -= acceleration*dt * radius;
-             rv -= acceleration*dt * 10;
-          } //else { // else speed is less than (i.e. keep increase)
-            //print("b");
-            if(waypoints != null && waypoints.size() > 1) { // if there are waypoints, go to next one
-              waypoints.remove(0);
-              seek(waypoints.get(0));
-            } else { // no more waypoints (i.e. stop)
-              v = kinematic.getSpeed() * -1; // get it to 0
-              rv = kinematic.getRotationalVelocity() * -1; // get it to 0
-            }
-          //}*/
-          
-          
-          // REFACTORING IN PROCESS; IGNORE
           // if within target range, stop
             // if waypoints etc
           // else slow
+          float slowBy = 7*dt * radius;
           if (PVector.sub(kinematic.position, target).mag() < radius) { // if within radius tolerance
             print("x");
-            //v = kinematic.getSpeed() * -1; // get it to 0
-            //rv = kinematic.getRotationalVelocity() * -1; // get it to 0
-            kinematic.increaseSpeed(kinematic.getSpeed() * -1, kinematic.getRotationalVelocity() * -1);
             if(waypoints != null && waypoints.size() > 1) { // if there are waypoints, go to next one
               waypoints.remove(0);
               seek(waypoints.get(0));
+              //v = 0;
+              v += 4*dt;
+              rv = 0;    
+              println("TARGET HIT");
+            } else if(waypoints == null || waypoints.size() == 1) { // no more waypoints
               v = 0;
               rv = 0;
+              kinematic.increaseSpeed(kinematic.getSpeed() * -1, kinematic.getRotationalVelocity() * -1); // stop
             }
-          } else if(kinematic.getSpeed() > (5*dt)) {
-          //} else if(kinematic.getSpeed() > (acceleration*dt * radius) && (kinematic.getRotationalVelocity() > acceleration*dt * 10)) {// if ( kinematic.getSpeed() > slowdown) {
+          } else if(kinematic.getSpeed() > slowBy) { // else is in the circle
              print("a");
-             v = -5*dt; //acceleration*dt * radius;
-             //rv = 5*dt;//acceleration*dt * 10;
+             v = -slowBy;
           }
         }
         println(kinematic.getSpeed(), v);
