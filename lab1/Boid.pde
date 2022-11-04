@@ -53,35 +53,42 @@ class Boid
         if (dr < 0) rv = -kinematic.max_speed;
         
         // Linear velocity
+        int operation = 0;
+                        // 0 = no change
+                        // 1 = add
+                        // 2 = subtract
+        float v_factor = 7*dt*radius;
+        float old_v = v;
         if (kinematic.getSpeed() < kinematic.max_speed) { // increase speed
-           v += 4*dt;
-        }
+           v = v_factor;
+           //operation = 1;
+        }//*/
         if (PVector.sub(kinematic.position, target).mag() < slowdown) { // if within slowdown range
         
           // if within target range, stop
             // if waypoints etc
           // else slow
-          float slowBy = 7*dt * radius;
           if (PVector.sub(kinematic.position, target).mag() < radius) { // if within radius tolerance
-            print("x");
+            //print("x");
             if(waypoints != null && waypoints.size() > 1) { // if there are waypoints, go to next one
               waypoints.remove(0);
               seek(waypoints.get(0));
-              //v = 0;
-              v += 4*dt;
-              rv = 0;    
-              println("TARGET HIT");
+              //v += 4*dt;  
+              v = 0;
+              //println("TARGET HIT");
             } else if(waypoints == null || waypoints.size() == 1) { // no more waypoints
               v = 0;
               rv = 0;
               kinematic.increaseSpeed(kinematic.getSpeed() * -1, kinematic.getRotationalVelocity() * -1); // stop
             }
-          } else if(kinematic.getSpeed() > slowBy) { // else is in the circle
-             print("a");
-             v = -slowBy;
+          //} else if(kinematic.getSpeed() > v_factor) { // else is in the circle          
+          } else if(kinematic.getSpeed() > 20) { // else is in the circle
+            //print("a");
+            v = -v_factor;
           }
         }
-        println(kinematic.getSpeed(), v);
+        
+        //println(kinematic.getSpeed(), v);
         kinematic.increaseSpeed(v, rv);
      }
      
