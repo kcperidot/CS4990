@@ -36,7 +36,7 @@ class NavMesh
    void bake(Map map)
    {
        /// generate the graph you need for pathfinding
-       //breakdown(map.walls);
+       breakdown(map.walls);
    }
    
    ArrayList<PVector> findPath(PVector start, PVector destination)
@@ -59,7 +59,7 @@ class NavMesh
         if(polygon.get(i).normal.dot(polygon.get((i+1)%len).direction) > 0) { // if reflex
          //println("REFLEX ", i);
          
-         //isBrokenDown = true; // break down polygon, ie DO NOT ADD TO LIST
+         isBrokenDown = true; // break down polygon, ie DO NOT ADD TO LIST
          //circle(polygon.get((i)%len).end.x, polygon.get((i)%len).end.y, 10); // draw a dot at reflex angle
          
          for(int j = 2; j < len-1; j++) { // check all nodes
