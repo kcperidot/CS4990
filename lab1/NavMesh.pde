@@ -63,10 +63,6 @@ class NavMesh
    boolean placeable(PVector start, PVector end) {
      //if(map.collides(polygon.get(i).end, polygon.get((i+j)%len).start) && map.isReachable(PVector.mult(PVector.add(polygon.get((i+j)%len).start, polygon.get(i).end), 0.5)))
      PVector total = PVector.add(start, end);
-     //return map.collides(end, start) && map.isReachable(PVector.mult(total, 0.5)) && map.isReachable(PVector.mult(total, 0.25)) && map.isReachable(PVector.mult(total, 0.75));
-     PVector point = PVector.mult(total, 0.5);
-     //PVector point2 = PVector.mult(total, 0.25);
-     //PVector point7 = PVector.mult(total, 1);
      PVector newStart = PVector.add(start, PVector.mult(PVector.sub(end, start), 0.01));
      PVector newEnd = PVector.add(end, PVector.mult(PVector.sub(end, start), -0.01));
      for(int i = 0; i < map.walls.size(); i++) {
@@ -75,7 +71,11 @@ class NavMesh
          return false;
        }
      }
-     //print("yes");
+     
+     //return map.collides(end, start) && map.isReachable(PVector.mult(total, 0.5)) && map.isReachable(PVector.mult(total, 0.25)) && map.isReachable(PVector.mult(total, 0.75));
+     PVector point = PVector.mult(total, 0.5);
+     //PVector point2 = PVector.mult(total, 0.25);
+     //PVector point7 = PVector.mult(total, 1);
      if(map.isReachable(point)) {
      //if(map.collides(end, start) && map.isReachable(point)) {
      //if(map.collides(end, start) && map.isReachable(point) && map.isReachable(point2) && map.isReachable(point7)) {
