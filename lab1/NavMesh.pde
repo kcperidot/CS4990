@@ -108,14 +108,62 @@ class NavMesh
            // check all points except neighbors
            // here
            
+             int start = i;
+             int end = (i+j)%len;
+             if (start > end) {
+               int temp = start;
+               start = end;
+               end = temp;
+             }            
+           
            //if(map.collides(polygon.get(i).end, polygon.get((i+j)%len).start) && map.isReachable(PVector.mult(PVector.add(polygon.get((i+j)%len).start, polygon.get(i).end), 0.5))) {
-           if(placeable(polygon.get((i+j)%len).start, polygon.get(i).end)) { //if legal line exists
+           if(placeable(polygon.get(end).start, polygon.get(start).end)) { //if legal line exists
              //println((i+j)%len);
              //lines.add(polygon.get(i).end);
              //lines.add(polygon.get((i+j)%len).start);
-             
+                
              // LOCAL VARIABLES ARE FREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-             if(i < (i+j)%len) {
+             /*// right: i:j, newLine(end, st)
+             ArrayList<Wall> left = new ArrayList<Wall>();
+             for(int l = start+1; l <= end; l++){ // i:j
+               left.add(polygon.get(l%len));
+             }
+             left.add(new Wall(polygon.get(end).start, polygon.get(start).end)); //newLine(end, st)
+             breakdown(left);
+             
+             // left: 0:i-1, newLine(st, end), j:len
+             ArrayList<Wall> right = new ArrayList<Wall>();
+             for(int r = 0; r <= start; r++){ // 0:i-1
+               right.add(polygon.get(r));
+             }
+             right.add(new Wall(polygon.get(start).end, polygon.get(end).start)); //newLine(st, end)
+             for(int r = end+1; r < len; r++){ // j:len
+               right.add(polygon.get(r));
+             }
+             breakdown(right);*/
+             
+             // left: 0:i-1, newLine(st, end), j:len
+             ArrayList<Wall> left = new ArrayList<Wall>();
+             for(int l = 0; l <= start; l++){ // 0:i-1
+               left.add(polygon.get(l));
+             }
+             left.add(new Wall(polygon.get(start).end, polygon.get(end).start)); //newLine(st, end)
+             for(int l = end+1; l < len; l++){ // j:len
+               left.add(polygon.get(l));
+             }
+             breakdown(left);
+                            
+             // right: i:j, newLine(end, st)
+             ArrayList<Wall> right = new ArrayList<Wall>();
+             for(int r = start+1; r <= end; r++){ // i:j
+               right.add(polygon.get(r%len));
+             }
+             right.add(new Wall(polygon.get(end).start, polygon.get(start).end)); //newLine(end, st)
+             breakdown(right);
+             
+             return;
+             
+             /*if(i < (i+j)%len) {
                
                // left: 0:i-1, newLine(st, end), j:len
                ArrayList<Wall> left = new ArrayList<Wall>();
@@ -183,7 +231,7 @@ class NavMesh
                breakdown(right);
                
                return;
-             }
+             }*/
            }
          }
         }
