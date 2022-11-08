@@ -9,13 +9,21 @@ PVector[] customMap(int nr)
     }
     else if (nr == 2)
     {
-        return new PVector[] {new PVector(0, 1), new PVector(0.25, 1),  new PVector(0.4, 0.75), new PVector(0.45, 0.5), 
+        /*return new PVector[] {new PVector(0, 1), new PVector(0.25, 1),  new PVector(0.4, 0.75), new PVector(0.45, 0.5), 
                               new PVector(0.1, 0.5), new PVector(0.12, 0.35), new PVector(0.25, 0.35), new PVector(0.5, 0.4),
                               new PVector(0.5, 0.65), new PVector(0.6, 0.65), new PVector(0.6, 0.8), new PVector(0.5, 0.82),
                               new PVector(0.3, 1), new PVector(1,1), new PVector(1,0), new PVector(0.57, 0), new PVector(0.6, 0.35),
                               new PVector(0.7, 0.35), new PVector(0.67, 0.1), new PVector(0.85, 0.1), new PVector(0.82,0.15),
                               new PVector(0.75, 0.2), new PVector(0.75, 0.75), new PVector(0.85, 0.92), new PVector(0.62, 0.9),
                               new PVector(0.7, 0.8), new PVector(0.7, 0.5), new PVector(0.58, 0.45), new PVector(0.45,0), 
+                              new PVector(0.25, 0), new PVector(0.25, 0.15), new PVector(0, 0.15)};*/
+        return new PVector[] {new PVector(0, 1), new PVector(0.25, 1),  new PVector(0.4, 0.75), new PVector(0.45, 0.5), 
+                              new PVector(0.1, 0.5), new PVector(0.12, 0.35), new PVector(0.25, 0.35), new PVector(0.5, 0.4),
+                              new PVector(0.5, 0.65), new PVector(0.6, 0.65), new PVector(0.6, 0.8), new PVector(0.5, 0.82),
+                              new PVector(0.3, 1), new PVector(1,1), new PVector(1,0), new PVector(0.57, 0), new PVector(0.6, 0.35),
+                              new PVector(0.7, 0.35), new PVector(0.67, 0.1), new PVector(0.85, 0.1), new PVector(0.82,0.15),
+                              new PVector(0.75, 0.2), new PVector(0.75, 0.75), new PVector(0.85, 0.92), new PVector(0.62, 0.9),
+                              new PVector(0.7, 0.8), new PVector(0.7, 0.5), new PVector(0.58, 0.35), new PVector(0.45,0), 
                               new PVector(0.25, 0), new PVector(0.25, 0.15), new PVector(0, 0.15)};
     }
     else if (nr == 3)
