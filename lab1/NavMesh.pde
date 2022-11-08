@@ -33,6 +33,7 @@ class NavMesh
   
   // DELETE
   //ArrayList<Wall> right = new ArrayList<Wall>(); ArrayList<Wall> left = new ArrayList<Wall>(); ArrayList<PVector> rPoints = new ArrayList<PVector>();
+  ArrayList<PVector> hp = new ArrayList<PVector>();
    void bake(Map map)
    {
        /// generate the graph you need for pathfinding
@@ -59,8 +60,31 @@ class NavMesh
       return result;
    }
    
-   boolean placeable() {
-     return true;
+   boolean placeable(PVector start, PVector end) {
+     //if(map.collides(polygon.get(i).end, polygon.get((i+j)%len).start) && map.isReachable(PVector.mult(PVector.add(polygon.get((i+j)%len).start, polygon.get(i).end), 0.5)))
+     PVector total = PVector.add(start, end);
+     //return map.collides(end, start) && map.isReachable(PVector.mult(total, 0.5)) && map.isReachable(PVector.mult(total, 0.25)) && map.isReachable(PVector.mult(total, 0.75));
+     PVector point = PVector.mult(total, 0.5);
+     //PVector point2 = PVector.mult(total, 0.25);
+     //PVector point7 = PVector.mult(total, 1);
+     PVector newStart = PVector.add(start, PVector.mult(PVector.sub(end, start), 0.01));
+     PVector newEnd = PVector.add(end, PVector.mult(PVector.sub(end, start), -0.01));
+     for(int i = 0; i < map.walls.size(); i++) {
+       if(map.walls.get(i).crosses(newEnd, newStart)) {
+         //print("no");
+         return false;
+       }
+     }
+     //print("yes");
+     if(map.isReachable(point)) {
+     //if(map.collides(end, start) && map.isReachable(point)) {
+     //if(map.collides(end, start) && map.isReachable(point) && map.isReachable(point2) && map.isReachable(point7)) {
+       hp.add(point);
+       //hp.add(point2);
+       //hp.add(point7);
+       return true;
+     }
+     return false;//*/
    }
    
    ArrayList<PVector> lines = new ArrayList<PVector>(); // put me somewhere appropriate!!
@@ -85,8 +109,8 @@ class NavMesh
          for(int j = 2; j < len-1; j++) { // check all nodes
            // here
            
-           if(map.collides(polygon.get(i).end, polygon.get((i+j)%len).start) && map.isReachable(PVector.mult(PVector.add(polygon.get((i+j)%len).start, polygon.get(i).end), 0.5))) {
-             // if legal line exists
+           //if(map.collides(polygon.get(i).end, polygon.get((i+j)%len).start) && map.isReachable(PVector.mult(PVector.add(polygon.get((i+j)%len).start, polygon.get(i).end), 0.5))) {
+           if(placeable(polygon.get((i+j)%len).start, polygon.get(i).end)) { //if legal line exists
              //println((i+j)%len);
              lines.add(polygon.get(i).end);
              lines.add(polygon.get((i+j)%len).start);
@@ -102,7 +126,7 @@ class NavMesh
                for(int l = i+j+1; l < len; l++){ // j:len
                  left.add(polygon.get(l));
                }
-               print("left");
+               //print("left");
                nodes.add(new Node(polygon));
                breakdown(left);
                
@@ -113,7 +137,7 @@ class NavMesh
                  right.add(polygon.get(r));
                }
                right.add(new Wall(polygon.get((i+j)%len).start, polygon.get(i).end)); //newLine(end, st)
-               print("right");
+               //print("right");
                nodes.add(new Node(polygon));
                breakdown(right);
                
@@ -138,7 +162,7 @@ class NavMesh
                  left.add(polygon.get(l));
                }
                //print("left");
-               //nodes.add(new Node(polygon));
+               nodes.add(new Node(polygon));
                breakdown(left);
                
                
@@ -149,7 +173,7 @@ class NavMesh
                  right.add(polygon.get((r+j)%len));
                }
                right.add(new Wall(polygon.get((i+j)%len).start, polygon.get(i).end)); //newLine(end, st)
-               print("right");
+               //print("right");
                nodes.add(new Node(polygon));
                breakdown(right);
                
@@ -210,6 +234,12 @@ class NavMesh
         }
         //println("draw");
       }//*/
+      stroke(255,0,255);
+      if(hp != null) {
+        for(int i = 0; i < hp.size(); i++) {
+          circle(hp.get(i).x, hp.get(i).y, 10);
+        }
+      }
       /*if(rPoints != null) {
         for(int i = 0; i < rPoints.size(); i++) {
           circle(rPoints.get(i).x, rPoints.get(i).y, 10);
