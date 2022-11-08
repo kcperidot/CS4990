@@ -74,14 +74,8 @@ class NavMesh
      
      //return map.collides(end, start) && map.isReachable(PVector.mult(total, 0.5)) && map.isReachable(PVector.mult(total, 0.25)) && map.isReachable(PVector.mult(total, 0.75));
      PVector point = PVector.mult(total, 0.5);
-     //PVector point2 = PVector.mult(total, 0.25);
-     //PVector point7 = PVector.mult(total, 1);
      if(map.isReachable(point)) {
-     //if(map.collides(end, start) && map.isReachable(point)) {
-     //if(map.collides(end, start) && map.isReachable(point) && map.isReachable(point2) && map.isReachable(point7)) {
        hp.add(point);
-       //hp.add(point2);
-       //hp.add(point7);
        return true;
      }
      return false;//*/
