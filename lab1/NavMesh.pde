@@ -66,9 +66,9 @@ class NavMesh
      boolean isBrokenDown = false;
      int len = polygon.size();
      
-     if(counter < 8) {
-       println(counter, len);
-       counter++;
+     //if(counter < 8) {
+       //println(counter, len);
+       //counter++;
      if(len > 3) { // polygons with 3 walls are always convex
       for(int i = 0; i < len; i++) { // for each wall
         //println("loop ", i);
@@ -94,20 +94,22 @@ class NavMesh
                left.add(polygon.get(l));
              }
              left.add(new Wall(polygon.get(i).end, polygon.get((i+j)%len).start)); //newLine(st, end)
-             for(int l = j+1; l < len; l++){ // j:len
+             for(int l = i+j+1; l < len; l++){ // j:len
                left.add(polygon.get(l));
              }
-             print("left");
-             nodes.add(new Node(polygon));
+             //print("left");
+             //nodes.add(new Node(polygon));
              breakdown(left);
              
              
              // right: i:j, newLine(end, st)
              ArrayList<Wall> right = new ArrayList<Wall>();
-             for(int r = i+1; r <= j; r++){ // i:j
+             for(int r = i+1; r <= i+j; r++){ // i:j
                right.add(polygon.get(r));
              }
              right.add(new Wall(polygon.get((i+j)%len).start, polygon.get(i).end)); //newLine(end, st)
+             print("right");
+             nodes.add(new Node(polygon));
              breakdown(right);
              
              //println("found a line");
@@ -124,7 +126,7 @@ class NavMesh
          }
         }
       }//*/
-     } }
+     } //}
      
      if(!isBrokenDown) {
        // add polygon to list
