@@ -81,7 +81,7 @@ class NavMesh
      return false;//*/
    }
    
-   ArrayList<PVector> lines = new ArrayList<PVector>(); // put me somewhere appropriate!!
+   //ArrayList<PVector> lines = new ArrayList<PVector>(); // put me somewhere appropriate!!
    
    //int counter = 0;
    void breakdown(ArrayList<Wall> polygon) {
@@ -92,13 +92,13 @@ class NavMesh
        //println(counter, len);
        //counter++;
      if(len > 3) { // polygons with 3 walls are always convex
-      for(int i = 0; i < len; i++) { // for each wall
+      for(int i = 0; i < len; i++) { // for each wall in polygon
         //println("loop ", i);
         if(polygon.get(i).normal.dot(polygon.get((i+1)%len).direction) > 0) { // if reflex
          //println("REFLEX ", i);
          //rPoints.add(polygon.get(i).end);
          
-         isBrokenDown = true; // break down polygon, ie DO NOT ADD TO LIST
+         isBrokenDown = true; // break down polygon, ie DO NOT ADD TO LIST (not convex)
          
          for(int j = 2; j < len-1; j++) { // check all nodes; 0 ----- i ----- i+j ----- len
            // check all points except neighbors
@@ -112,6 +112,7 @@ class NavMesh
              
              // LOCAL VARIABLES ARE FREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
              if(i < (i+j)%len) {
+               
                // left: 0:i-1, newLine(st, end), j:len
                ArrayList<Wall> left = new ArrayList<Wall>();
                for(int l = 0; l <= i; l++){ // 0:i-1
@@ -123,9 +124,9 @@ class NavMesh
                }
                //print("left");
                //nodes.add(new Node(left)); // maybe add new nodes on the bottom, for neighbors??
+               //println("left", left.size());
                breakdown(left);
-               
-               
+                              
                // right: i:j, newLine(end, st)
                ArrayList<Wall> right = new ArrayList<Wall>();
                for(int r = i+1; r <= i+j; r++){ // i:j
@@ -134,6 +135,7 @@ class NavMesh
                right.add(new Wall(polygon.get((i+j)%len).start, polygon.get(i).end)); //newLine(end, st)
                //print("right");
                //nodes.add(new Node(right));
+               //println("right", right.size());
                breakdown(right);
                
                //println("found a line");
@@ -143,15 +145,13 @@ class NavMesh
                //lines.add(polygon.get((i+j)%len).end);
                //break;
                
-               //breakdown L
-               //breakdown R
-               
                return;
                
              } else { // 0 ----- i+j ------ i ----- len
+             
                // left: 0:i-1, newLine(st, end), j:len
                ArrayList<Wall> left = new ArrayList<Wall>();
-               println(i+j);
+               //println(i+j);
                for(int l = 0; l < (i+j)%len; l++){ // 0:i-1
                  left.add(polygon.get(l));
                }
@@ -165,12 +165,17 @@ class NavMesh
                               
                // right: i:j, newLine(end, st)
                ArrayList<Wall> right = new ArrayList<Wall>();
-               for(int r = i+j; r <= i; r++){ // i:j
-                 right.add(polygon.get(r%len));
+               //for(int r = (i+j)%len; r <= i; r++){ // i:j
+               for(int r = (i+j)%len + 1; r <= i; r++){ // i:j
+               print("here");
+                 //println("", i+j, i);
+                 //println(r, i, j);
+                 right.add(polygon.get(r));
                }
                right.add(new Wall(polygon.get((i+j)%len).start, polygon.get(i).end)); //newLine(end, st)
                //print("right");
                //nodes.add(new Node(right));
+               //println(right.size());
                breakdown(right);
                
                return;
@@ -179,11 +184,12 @@ class NavMesh
          }
         }
       }//*/
-     } //}
+     }
      
      if(!isBrokenDown) {
        // add polygon to list
        nodes.add(new Node(polygon));
+       //println(polygon.size());
        return;
      }
      
