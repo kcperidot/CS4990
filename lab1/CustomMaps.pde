@@ -51,7 +51,7 @@ PVector[] customMap(int nr)
     }
     else /// you can use nr==5, nr==6, ... nr==9 to add your own custom maps
     {
-        return new PVector[] {new PVector(0, 1), new PVector(0.8, 1), new PVector(0.55, 0.7), new PVector(0.75, 0.1), 
+        return new PVector[] {new PVector(0, 1), new PVector(0.8, 1),  new PVector(0.35, 0.8), new PVector(0.55, 0.7), new PVector(0.75, 0.1), 
                               new PVector(1, 0.9), new PVector(1, 0), new PVector(0.25, 0), new PVector(0.25, 0.15), new PVector(0, 0.15)};
     }
 

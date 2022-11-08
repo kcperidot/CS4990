@@ -29,14 +29,18 @@ class Node
 class NavMesh
 {   
   //Node[] nodes = {};
-  ArrayList<Node> nodes = new ArrayList<Node>();
+  ArrayList<Node> nodes;// = new ArrayList<Node>();
   
   // DELETE
   //ArrayList<Wall> right = new ArrayList<Wall>(); ArrayList<Wall> left = new ArrayList<Wall>(); ArrayList<PVector> rPoints = new ArrayList<PVector>();
-  ArrayList<PVector> hp = new ArrayList<PVector>();
+  ArrayList<PVector> hp;// = new ArrayList<PVector>();
    void bake(Map map)
    {
        /// generate the graph you need for pathfinding
+       
+       
+       nodes = new ArrayList<Node>();
+       hp  = new ArrayList<PVector>();
        breakdown(map.walls);
        /*int len = map.walls.size();
       for(int i = 0; i < len; i++) {

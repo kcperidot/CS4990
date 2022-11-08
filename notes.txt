@@ -1,0 +1,5 @@
+- nonconvex shapes (recurses incorrectly)
+
+
+- tolerance?
+adds neighbors?????
