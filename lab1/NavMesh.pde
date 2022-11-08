@@ -59,6 +59,10 @@ class NavMesh
       return result;
    }
    
+   boolean placeable() {
+     return true;
+   }
+   
    ArrayList<PVector> lines = new ArrayList<PVector>(); // put me somewhere appropriate!!
    
    int counter = 0;
@@ -88,40 +92,78 @@ class NavMesh
              lines.add(polygon.get((i+j)%len).start);
              
              // LOCAL VARIABLES ARE FREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-             // left: 0:i-1, newLine(st, end), j:len
-             ArrayList<Wall> left = new ArrayList<Wall>();
-             for(int l = 0; l <= i; l++){ // 0:i-1
-               left.add(polygon.get(l));
+             if(i < (i+j)%len) {
+               // left: 0:i-1, newLine(st, end), j:len
+               ArrayList<Wall> left = new ArrayList<Wall>();
+               for(int l = 0; l <= i; l++){ // 0:i-1
+                 left.add(polygon.get(l));
+               }
+               left.add(new Wall(polygon.get(i).end, polygon.get((i+j)%len).start)); //newLine(st, end)
+               for(int l = i+j+1; l < len; l++){ // j:len
+                 left.add(polygon.get(l));
+               }
+               print("left");
+               nodes.add(new Node(polygon));
+               breakdown(left);
+               
+               
+               // right: i:j, newLine(end, st)
+               ArrayList<Wall> right = new ArrayList<Wall>();
+               for(int r = i+1; r <= i+j; r++){ // i:j
+                 right.add(polygon.get(r));
+               }
+               right.add(new Wall(polygon.get((i+j)%len).start, polygon.get(i).end)); //newLine(end, st)
+               print("right");
+               nodes.add(new Node(polygon));
+               breakdown(right);
+               
+               //println("found a line");
+               //line(polygon.get(i).end.x, polygon.get(i).end.y, polygon.get((i+j)%len).end.x, polygon.get((i+j)%len).end.y);
+               
+               //lines.add(polygon.get(i).end);
+               //lines.add(polygon.get((i+j)%len).end);
+               //break;
+               
+               //breakdown L
+               //breakdown R
+               return;
+             } else {
+               // left: 0:i-1, newLine(st, end), j:len
+               ArrayList<Wall> left = new ArrayList<Wall>();
+               for(int l = 0; l < i+j; l++){ // 0:i-1
+                 //left.add(polygon.get(l));
+               }
+               left.add(new Wall(polygon.get(i).end, polygon.get((i+j)%len).start)); //newLine(st, end)
+               for(int l = i; l < len; l++){ // j:len
+                 left.add(polygon.get(l));
+               }
+               //print("left");
+               //nodes.add(new Node(polygon));
+               breakdown(left);
+               
+               
+               // right: i:j, newLine(end, st)
+               ArrayList<Wall> right = new ArrayList<Wall>();
+               //for(int r = i+1; r <= i+j; r++){ // i:j
+               for(int r = 0; r <= j; r++){ // i:j
+                 right.add(polygon.get((r+j)%len));
+               }
+               right.add(new Wall(polygon.get((i+j)%len).start, polygon.get(i).end)); //newLine(end, st)
+               print("right");
+               nodes.add(new Node(polygon));
+               breakdown(right);
+               
+               //println("found a line");
+               //line(polygon.get(i).end.x, polygon.get(i).end.y, polygon.get((i+j)%len).end.x, polygon.get((i+j)%len).end.y);
+               
+               //lines.add(polygon.get(i).end);
+               //lines.add(polygon.get((i+j)%len).end);
+               //break;
+               
+               //breakdown L
+               //breakdown R
+               return;
              }
-             left.add(new Wall(polygon.get(i).end, polygon.get((i+j)%len).start)); //newLine(st, end)
-             for(int l = i+j+1; l < len; l++){ // j:len
-               left.add(polygon.get(l));
-             }
-             //print("left");
-             //nodes.add(new Node(polygon));
-             breakdown(left);
-             
-             
-             // right: i:j, newLine(end, st)
-             ArrayList<Wall> right = new ArrayList<Wall>();
-             for(int r = i+1; r <= i+j; r++){ // i:j
-               right.add(polygon.get(r));
-             }
-             right.add(new Wall(polygon.get((i+j)%len).start, polygon.get(i).end)); //newLine(end, st)
-             print("right");
-             nodes.add(new Node(polygon));
-             breakdown(right);
-             
-             //println("found a line");
-             //line(polygon.get(i).end.x, polygon.get(i).end.y, polygon.get((i+j)%len).end.x, polygon.get((i+j)%len).end.y);
-             
-             //lines.add(polygon.get(i).end);
-             //lines.add(polygon.get((i+j)%len).end);
-             //break;
-             
-             //breakdown L
-             //breakdown R
-             return;
            }
          }
         }
@@ -145,7 +187,7 @@ class NavMesh
    int nodesAmt = 0;
    void draw()
    {
-     stroke(0,255,0);
+     stroke(2,255,0);
      
       /// use this to draw the nav mesh graph
       
@@ -159,7 +201,7 @@ class NavMesh
       
       if(nodes != null ){//&& nodes.size() > nodesAmt) {
         nodesAmt = nodes.size();
-        stroke(255,0,0);
+        stroke(255,200,200);
         //line(polygon.get(i).end.x, polygon.get(i).end.y, polygon.get((i+j)%len).end.x, polygon.get((i+j)%len).end.y);
         for(int i = 0; i < nodes.size(); i++) {
           for(int j = 0; j < nodes.get(i).polygon.size(); j++) {
