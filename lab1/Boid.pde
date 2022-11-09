@@ -47,10 +47,10 @@ class Boid
         // v is preserved between calls!!!!!
         
         // Rotational velocity
-        float rv = kinematic.max_speed;
+        float rv = kinematic.max_rotational_speed;
         float tr = atan2(target.y - kinematic.position.y, target.x - kinematic.position.x);
         float dr = normalize_angle_left_right(tr - kinematic.getHeading());
-        if (dr < 0) rv = -kinematic.max_speed;
+        if (dr < 0) rv = -kinematic.max_rotational_speed;
         
         // Linear velocity
         int operation = 0;
