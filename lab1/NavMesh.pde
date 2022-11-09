@@ -35,6 +35,8 @@ class NavMesh
   // DELETE
   //ArrayList<Wall> right = new ArrayList<Wall>(); ArrayList<Wall> left = new ArrayList<Wall>(); ArrayList<PVector> rPoints = new ArrayList<PVector>();
   ArrayList<PVector> hp;// = new ArrayList<PVector>();
+  ArrayList<PVector> lines;  
+  int counter;
   void bake(Map map)
   {
     /// generate the graph you need for pathfinding
@@ -42,6 +44,8 @@ class NavMesh
 
     nodes = new ArrayList<Node>();
     hp  = new ArrayList<PVector>();
+    counter = 0;
+    lines = new ArrayList<PVector>();
     breakdown(map.walls);
     /*int len = map.walls.size();
      for(int i = 0; i < len; i++) {
@@ -86,14 +90,17 @@ class NavMesh
     return false;//*/
   }
   int id = 0;
-  void breakdown(ArrayList<Wall> polygon) {
+  void breakdown(ArrayList<Wall> bdpolygon) {
+    println(bdpolygon.size());
+    //if(counter <5) {
+      counter++;
     boolean isBrokenDown = false;
-    int len = polygon.size();
+    int len = bdpolygon.size();
 
     if (len > 3) { // polygons with 3 walls are always convex
       for (int i = 0; i < len; i++) { // for each wall in polygon
         //println("loop ", i);
-        if (polygon.get(i).normal.dot(polygon.get((i+1)%len).direction) > 0) { // if reflex
+        if (bdpolygon.get(i).normal.dot(bdpolygon.get((i+1)%len).direction) > 0) { // if reflex
 
           isBrokenDown = true; // break down polygon, ie DO NOT ADD TO LIST (not convex)
 
@@ -107,8 +114,15 @@ class NavMesh
               start = end;
               end = temp;
             }
+            //println(i, j);
 
-            if (placeable(polygon.get(end).start, polygon.get(start).end)) { //if legal line exists
+            //if (placeable(bdpolygon.get(end).start, bdpolygon.get(start).end)) { //if legal line exists dep.
+            //if (placeable(bdpolygon.get(i).end, bdpolygon.get((i+j)%len).start)) { //if legal line exists
+            if (placeable(bdpolygon.get(i).end, bdpolygon.get((i+j)%len).end)) { //if legal line exists
+            //lines.add(bdpolygon.get(end).start);
+            //lines.add(bdpolygon.get(end).end);
+            //lines.add(bdpolygon.get(start).end);
+            //println("HERE");
 
               // LOCAL VARIABLES ARE FREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 
@@ -116,29 +130,31 @@ class NavMesh
               print("left ");
               ArrayList<Wall> left = new ArrayList<Wall>();
               for (int l = 0; l <= start; l++) { // 0:i-1
-                left.add(polygon.get(l));
-                print(l, " ");
+                left.add(bdpolygon.get(l));
+                //print(l, " ");
               }
-              left.add(new Wall(polygon.get(start).end, polygon.get(end).start)); //newLine(st, end)
+              left.add(new Wall(bdpolygon.get(start).end, bdpolygon.get(end).end)); //newLine(st, end)
               for (int l = end+1; l < len; l++) { // j:len
-                left.add(polygon.get(l));
-                print(l, " ");
+                left.add(bdpolygon.get(l));
+                //print(l, " ");
               }
               println();
+      nodes.add(new Node(id, left));
               breakdown(left);
 
               // right: i:j, newLine(end, st)
               print("right ");
               ArrayList<Wall> right = new ArrayList<Wall>();
               for (int r = start+1; r <= end; r++) { // i:j
-                right.add(polygon.get(r%len));
-                print(r, " ");
+                right.add(bdpolygon.get(r%len));
+                //print(r, " ");
               }
-              right.add(new Wall(polygon.get(end).start, polygon.get(start).end)); //newLine(end, st)
-              println();
+              right.add(new Wall(bdpolygon.get(end).end, bdpolygon.get(start).end)); //newLine(end, st)
+      //nodes.add(new Node(id, right));
+              //println();
               breakdown(right);
 
-              if (left.size() + right.size() != polygon.size()+2) {
+              if (left.size() + right.size() != bdpolygon.size()+2) {
                 print("critical failure"); // never triggered!!
               }
 
@@ -155,12 +171,12 @@ class NavMesh
       // add polygon to list
       id++;
 
-      nodes.add(new Node(id, polygon));
+      nodes.add(new Node(id, bdpolygon));
       //println(polygon.size());
-      draw();
+      //draw();
       return;
     }
-  }
+  } //}
 
 
   void update(float dt)
@@ -174,14 +190,6 @@ class NavMesh
     stroke(2, 255, 0);
 
     /// use this to draw the nav mesh graph
-
-    /*if(lines != null) {
-     //line(polygon.get(i).end.x, polygon.get(i).end.y, polygon.get((i+j)%len).end.x, polygon.get((i+j)%len).end.y);
-     for(int i = 0; i < lines.size()/2; i++) {
-     line(lines.get(i).x, lines.get(i).y, lines.get(i+1).x, lines.get(i+1).y);
-     }
-     //println("draw");
-     }*/
 
     if (nodes != null ) {//&& nodes.size() > nodesAmt) {
       nodesAmt = nodes.size();
@@ -205,6 +213,19 @@ class NavMesh
         circle(hp.get(i).x, hp.get(i).y, 10);
       }
     }
+    
+    
+
+    if(lines != null) {
+     //line(polygon.get(i).end.x, polygon.get(i).end.y, polygon.get((i+j)%len).end.x, polygon.get((i+j)%len).end.y);
+    stroke(2, 255, 0);
+     for(int i = 0; i < lines.size()-1; i+=2) {
+     line(lines.get(i).x, lines.get(i).y, lines.get(i+1).x, lines.get(i+1).y);
+     }
+     //println("draw");
+     }
+     
+     
     /*if(rPoints != null) {
      for(int i = 0; i < rPoints.size(); i++) {
      circle(rPoints.get(i).x, rPoints.get(i).y, 10);
