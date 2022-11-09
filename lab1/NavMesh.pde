@@ -88,7 +88,7 @@ class NavMesh
   int id = 0;
   void breakdown(ArrayList<Wall> polygon) {
     boolean isBrokenDown = false;
-    int len = this.polygon.size();
+    int len = polygon.size();
 
     if (len > 3) { // polygons with 3 walls are always convex
       for (int i = 0; i < len; i++) { // for each wall in polygon
@@ -139,7 +139,7 @@ class NavMesh
               breakdown(right);
 
               if (left.size() + right.size() != polygon.size()+2) {
-                print("critical failure");
+                print("critical failure"); // never triggered!!
               }
 
               //println();
