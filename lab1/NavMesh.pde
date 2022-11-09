@@ -7,9 +7,10 @@ import java.util.Comparator;
 /// This node representation is just a suggestion
 class Node
 {
-  Node(int id, ArrayList<Wall> polygon) {
+  Node(int id, ArrayList<Wall> polygon, PVector center) {
     this.id = id;
     this.polygon = polygon;
+    this.center = center;
   }
   Node(int id, ArrayList<Wall> polygon, PVector center, ArrayList<Node> neighbors, ArrayList<Wall> connections) {
     this.id = id;
@@ -142,11 +143,17 @@ class NavMesh
 
     if (!isBrokenDown) {
       // add polygon to list
+      
+      PVector center = new PVector(0,0,0);
+      for(int i = 0; i < bdpolygon.size(); i++) {
+        center = PVector.add(center, bdpolygon.get(i).center());
+      }
+      print(center);
+      center = PVector.div(center, (float) bdpolygon.size());
+      nodes.add(new Node(id, bdpolygon, center));
+      //println(id);
       id++;
-
-      nodes.add(new Node(id, bdpolygon));
       //println(bdpolygon.size());
-      //draw();
       return;
     }
   } //}
@@ -166,9 +173,9 @@ class NavMesh
 
     if (nodes != null ) {//&& nodes.size() > nodesAmt) {
       nodesAmt = nodes.size();
-      stroke(255, 200, 200);
       //line(polygon.get(i).end.x, polygon.get(i).end.y, polygon.get((i+j)%len).end.x, polygon.get((i+j)%len).end.y);
       for (int i = 0; i < nodes.size(); i++) {
+      stroke(255, 200, 200);
         for (int j = 0; j < nodes.get(i).polygon.size(); j++) {
 
           //textFont(createFont("Arial", 16, true), 16);
@@ -177,6 +184,8 @@ class NavMesh
 
           line(nodes.get(i).polygon.get(j).start.x, nodes.get(i).polygon.get(j).start.y, nodes.get(i).polygon.get(j).end.x, nodes.get(i).polygon.get(j).end.y);
         }
+        stroke(255, 100, 100);
+        circle(nodes.get(i).center.x, nodes.get(i).center.y, 3); // centers
       }
       //println("draw");
     }//*/
@@ -189,48 +198,14 @@ class NavMesh
     
     
 
-    /*if(lines != null) {
-     //line(polygon.get(i).end.x, polygon.get(i).end.y, polygon.get((i+j)%len).end.x, polygon.get((i+j)%len).end.y);
-    stroke(2, 255, 0);
-     for(int i = 0; i < lines.size()-1; i+=2) {
-     line(lines.get(i).x, lines.get(i).y, lines.get(i+1).x, lines.get(i+1).y);
-     }
-     //println("draw");
-     }
-     
-     
-    /*if(rPoints != null) {
-     for(int i = 0; i < rPoints.size(); i++) {
-     circle(rPoints.get(i).x, rPoints.get(i).y, 10);
-     }
-     }
-     stroke(0,0,150);
-     if(lines != null && lines.size() > 0) {
+    /*if(lines != null && lines.size() > 0) {
      //for(int i = 0; i < lines.size(); i++) {
      //  circle(rPoints.get(i).x, rPoints.get(i).y, 10);
      //}
      line(lines.get(0).x,lines.get(0).y,lines.get(1).x, lines.get(1).y);
      }
      
-     stroke(0,255,0);
-     
-     if(right != null) {
-     //line(polygon.get(i).end.x, polygon.get(i).end.y, polygon.get((i+j)%len).end.x, polygon.get((i+j)%len).end.y);
-     for(int i = 0; i < right.size(); i++) {
-     line(right.get(i).start.x, right.get(i).start.y, right.get(i).end.x, right.get(i).end.y);
-     }
-     //println("draw");
-     }
-     
-     stroke(255,150,150);
-     if(left != null) {
-     //line(polygon.get(i).end.x, polygon.get(i).end.y, polygon.get((i+j)%len).end.x, polygon.get((i+j)%len).end.y);
-     for(int i = 0; i < left.size(); i++) {
-     line(left.get(i).start.x, left.get(i).start.y, left.get(i).end.x, left.get(i).end.y);
-     }
-     }//*/
-
-    /*int len = map.walls.size();
+     /*int len = map.walls.size();
      for(int i = 0; i < len; i++) {
      //println("loop ", i);
      if(map.walls.get(i).normal.dot(map.walls.get((i+1)%len).direction) > 0) { // if reflex
