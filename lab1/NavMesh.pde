@@ -34,9 +34,9 @@ class NavMesh
 
   // DELETE
   //ArrayList<Wall> right = new ArrayList<Wall>(); ArrayList<Wall> left = new ArrayList<Wall>(); ArrayList<PVector> rPoints = new ArrayList<PVector>();
-  ArrayList<PVector> hp;// = new ArrayList<PVector>();
-  ArrayList<PVector> lines;  
-  int counter;
+  ArrayList<PVector> hp; // halfway points (idk why they're drawn like eyeballs)
+  //ArrayList<PVector> lines;  
+  //int counter;
   void bake(Map map)
   {
     /// generate the graph you need for pathfinding
@@ -44,22 +44,9 @@ class NavMesh
 
     nodes = new ArrayList<Node>();
     hp  = new ArrayList<PVector>();
-    counter = 0;
-    lines = new ArrayList<PVector>();
+    //counter = 0;
+    //lines = new ArrayList<PVector>();
     breakdown(map.walls);
-    /*int len = map.walls.size();
-     for(int i = 0; i < len; i++) {
-     if(map.walls.get(i).normal.dot(map.walls.get((i+1)%len).direction) > 0) { // if reflex
-     circle(map.walls.get((i)%len).end.x, map.walls.get((i)%len).end.y, 10);
-     
-     for(int j = 2; j < len-1; j++) { // check all nodes
-     if(map.collides(map.walls.get(i).end, map.walls.get((i+j)%len).start) && map.isReachable(PVector.mult(PVector.add(map.walls.get((i+j)%len).start, map.walls.get(i).end), 0.5))) {
-     line(map.walls.get(i).end.x, map.walls.get(i).end.y, map.walls.get((i+j)%len).end.x, map.walls.get((i+j)%len).end.y);
-     break;
-     }
-     }//
-     }
-     }//*/
   }
 
   ArrayList<PVector> findPath(PVector start, PVector destination)
@@ -70,30 +57,26 @@ class NavMesh
   }
 
   boolean placeable(PVector start, PVector end) {
-    //if(map.collides(polygon.get(i).end, polygon.get((i+j)%len).start) && map.isReachable(PVector.mult(PVector.add(polygon.get((i+j)%len).start, polygon.get(i).end), 0.5)))
     PVector total = PVector.add(start, end);
     PVector newStart = PVector.add(start, PVector.mult(PVector.sub(end, start), 0.01));
     PVector newEnd = PVector.add(end, PVector.mult(PVector.sub(end, start), -0.01));
     for (int i = 0; i < map.walls.size(); i++) {
       if (map.walls.get(i).crosses(newEnd, newStart)) {
-        //print("no");
         return false;
       }
     }
 
-    //return map.collides(end, start) && map.isReachable(PVector.mult(total, 0.5)) && map.isReachable(PVector.mult(total, 0.25)) && map.isReachable(PVector.mult(total, 0.75));
     PVector point = PVector.mult(total, 0.5);
     if (map.isReachable(point)) {
-      hp.add(point);
+      //hp.add(point);
       return true;
     }
-    return false;//*/
+    return false;
   }
   int id = 0;
   void breakdown(ArrayList<Wall> bdpolygon) {
-    println(bdpolygon.size());
     //if(counter <5) {
-      counter++;
+      //counter++;
     boolean isBrokenDown = false;
     int len = bdpolygon.size();
 
@@ -114,20 +97,15 @@ class NavMesh
               start = end;
               end = temp;
             }
-            //println(i, j);
 
-            //if (placeable(bdpolygon.get(end).start, bdpolygon.get(start).end)) { //if legal line exists dep.
-            //if (placeable(bdpolygon.get(i).end, bdpolygon.get((i+j)%len).start)) { //if legal line exists
             if (placeable(bdpolygon.get(i).end, bdpolygon.get((i+j)%len).end)) { //if legal line exists
-            //lines.add(bdpolygon.get(end).start);
             //lines.add(bdpolygon.get(end).end);
             //lines.add(bdpolygon.get(start).end);
-            //println("HERE");
 
               // LOCAL VARIABLES ARE FREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 
               // left: 0:i-1, newLine(st, end), j:len
-              print("left ");
+              //print("left ");
               ArrayList<Wall> left = new ArrayList<Wall>();
               for (int l = 0; l <= start; l++) { // 0:i-1
                 left.add(bdpolygon.get(l));
@@ -138,27 +116,22 @@ class NavMesh
                 left.add(bdpolygon.get(l));
                 //print(l, " ");
               }
-              println();
-      nodes.add(new Node(id, left));
               breakdown(left);
 
               // right: i:j, newLine(end, st)
-              print("right ");
+              //print("right ");
               ArrayList<Wall> right = new ArrayList<Wall>();
               for (int r = start+1; r <= end; r++) { // i:j
                 right.add(bdpolygon.get(r%len));
                 //print(r, " ");
               }
               right.add(new Wall(bdpolygon.get(end).end, bdpolygon.get(start).end)); //newLine(end, st)
-      //nodes.add(new Node(id, right));
-              //println();
               breakdown(right);
 
               if (left.size() + right.size() != bdpolygon.size()+2) {
-                print("critical failure"); // never triggered!!
+                print("critical failure");
               }
 
-              //println();
               return;
               
             }
@@ -172,7 +145,7 @@ class NavMesh
       id++;
 
       nodes.add(new Node(id, bdpolygon));
-      //println(polygon.size());
+      //println(bdpolygon.size());
       //draw();
       return;
     }
@@ -216,7 +189,7 @@ class NavMesh
     
     
 
-    if(lines != null) {
+    /*if(lines != null) {
      //line(polygon.get(i).end.x, polygon.get(i).end.y, polygon.get((i+j)%len).end.x, polygon.get((i+j)%len).end.y);
     stroke(2, 255, 0);
      for(int i = 0; i < lines.size()-1; i+=2) {
