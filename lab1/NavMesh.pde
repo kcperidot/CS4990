@@ -71,8 +71,10 @@ class NavMesh
     //breakdown(map.walls);
     breakdown(new Node(map.walls));
     
+    //println(nodes.size(), divisionLines.size());
+    
     // update neighbor
-    polygonIndex = new int[10];//divisionLines.size()];
+    polygonIndex = new int[nodes.size()];//divisionLines.size()];
     for(int i = 0; i < polygonIndex.length; i++) {
       polygonIndex[i] = -1;
     }
