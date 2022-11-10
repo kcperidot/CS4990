@@ -145,11 +145,13 @@ class NavMesh
   {
     /// implement A* to find a path
     ArrayList<FrontierEntry> frontier = new ArrayList<FrontierEntry>();
-    ArrayList<Integer> test = new ArrayList<Integer>();
-    ArrayList<Node> visited = new ArrayList<Node>();
+    ArrayList<Integer> test = new ArrayList<Integer>(); // node ids
+    ArrayList<FrontierEntry> visited = new ArrayList<FrontierEntry>();
+    //ArrayList<Integer> visited = new ArrayList<Integer>();
     Node currentn;
     int startnode = 0;
     int destnode = 0;
+    int destnodeid = 0;
     
     ArrayList<PVector> result = new ArrayList<PVector>();
     
@@ -158,40 +160,91 @@ class NavMesh
     for(int i = 0; i < nodes.size(); i++){
       if(isPointInPolygon(start, nodes.get(i).polygon)){
         startnode = i;
+        //startnode = nodes.get(i).id;
       }
       if(isPointInPolygon(destination, nodes.get(i).polygon)){
         destnode = i;
+        destnodeid = nodes.get(i).id;
       }
     } 
     }
     println(startnode + " " + destnode);
     //add entry to frontier
     frontier.add(new FrontierEntry(nodes.get(startnode), null, PVector.sub(nodes.get(startnode).center, start), PVector.sub(destination, nodes.get(startnode).center)));
-    test.add(frontier.get(0).current.id);    
-    while(frontier.get(0).current.id != destnode){
+    test.add(frontier.get(0).current.id);  
+    while(frontier.size() > 0 && destnodeid != frontier.get(0).current.id) {
+      //sort accordign to priority
+      frontier.sort(new FrontierCompare());
+      if(frontier.get(0).current.id == destnodeid) {
+        break;
+      } else {
+        currentn = frontier.get(0).current;
+        visited.add(frontier.get(0));
+        frontier.remove(0);
+        for(int i = 0; i < currentn.neighbors.size(); i++) { // iterates through neighbors
+          boolean identified = false;
+          FrontierEntry temp1 = new FrontierEntry(currentn.neighbors.get(i), currentn, PVector.sub(currentn.neighbors.get(i).center, start), PVector.sub(destination, currentn.neighbors.get(i).center));
+          for(int j = 0; j < visited.size(); j++) { // iterates through visited
+            if(currentn.neighbors.get(i).id == visited.get(j).current.id) {
+              identified = true;
+              if(temp1.total() < visited.get(visited.size()-1).total()) {
+                visited.get(j).cost = temp1.cost;
+                visited.get(j).from = currentn;
+              }
+            }            
+          }
+          
+          for(int k = 0; k < frontier.size(); k++) {
+            identified = true;
+            if(currentn.neighbors.get(i).id == frontier.get(k).current.id) {
+              if(visited.get(visited.size()-1).total() < frontier.get(k).total()) {
+                frontier.get(k).cost = visited.get(visited.size()-1).cost;
+                frontier.get(k).from = visited.get(visited.size()-1).current;
+              }
+            }
+          }
+          
+          if(!identified) {
+            frontier.add(temp1);
+          }
+        }
+        result.add(frontier.get(0).current.center);
+      }
+    }
+    
+    /*while(frontier.get(0).current.id != destnodeid){
+      //sort accordign to priority
+      frontier.sort(new FrontierCompare());
+      //if first node is destination node, finish
+      //else
+      //put current node in visited
       currentn = frontier.get(0).current;
-      visited.add(currentn);
+      //visited.add(currentn);
+      visited.add(frontier.get(0).current.id);
+      //frontier.remove(0);
       //add neighbors to frontier
       for(int i = 0; i < currentn.neighbors.size(); i++){
-        for(int j = 0; j < visited.size(); j++){
-          if(visited.get(j).id != currentn.neighbors.get(i).id){
-            frontier.add(new FrontierEntry(currentn.neighbors.get(i), currentn, PVector.sub(currentn.neighbors.get(i).center, start), PVector.sub(destination, currentn.neighbors.get(i).center)));
+        int vsize = visited.size();
+        for(int j = 0; j < vsize; j++){
+          //if(visited.get(j).id != currentn.neighbors.get(i).id){
+            FrontierEntry temp = new FrontierEntry(currentn.neighbors.get(i), currentn, PVector.sub(currentn.neighbors.get(i).center, start), PVector.sub(destination, currentn.neighbors.get(i).center));
+          if(visited.get(j) != currentn.neighbors.get(i).id && frontier.get(0).total > temp.total){
+            frontier.add(temp);
+            //visited.add(currentn.neighbors.get(i));
+            visited.add(currentn.neighbors.get(i).id);
           }
         }
       }
       //add to result
       result.add(currentn.neighbors.get(0).connections.get(0).center());
-
-      test.add(currentn.neighbors.get(0).id);
       //remove highest priority
       frontier.remove(0);
-      //sort accordign to priority
-      frontier.sort(new FrontierCompare());
-    }
+      
+      //current highest priority in frontier
+      test.add(currentn.id);
+    }*/
     //println(startnode);
-    for(int i = 0; i < test.size(); i++){
-      println(test.get(i) + ".");
-    }
+    println(result.size());
     return result;
   }
 
