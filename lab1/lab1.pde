@@ -44,7 +44,7 @@ void mousePressed() {
          billy.follow(waypoints);
        }else{
          billy.seek(target);
-         print("here");
+         //print("here");
        }
      }
      else

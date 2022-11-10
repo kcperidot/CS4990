@@ -73,8 +73,6 @@ class Boid
             if(waypoints != null && waypoints.size() > 1) { // if there are waypoints, go to next one
               waypoints.remove(0);
               seek(waypoints.get(0));
-              //v += 4*dt;  
-              //v = 0;
             v = -v_factor*3;
               //println("TARGET HIT");
             } else if(waypoints == null || waypoints.size() == 1) { // no more waypoints
@@ -82,14 +80,12 @@ class Boid
               rv = 0;
               kinematic.increaseSpeed(kinematic.getSpeed() * -1, kinematic.getRotationalVelocity() * -1); // stop
             }
-          //} else if(kinematic.getSpeed() > v_factor) { // else is in the circle          
           } else if(kinematic.getSpeed() > 20) { // else is in the circle
             //print("a");
             v = -v_factor;
           }
         }
         
-        //println(kinematic.getSpeed(), v);
         kinematic.increaseSpeed(v, rv);
      }
      
