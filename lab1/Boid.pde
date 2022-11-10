@@ -27,7 +27,7 @@ class Boid
    
    float v = 0;
    float radius = 10; // waypoint tolerance
-   float slowdown = radius * 10; // *7;
+   float slowdown = radius * 5; // *7;
    ArrayList<PVector> waypoints;   
    
    Boid(PVector position, float heading, float max_speed, float max_rotational_speed, float acceleration, float rotational_acceleration)
@@ -57,7 +57,7 @@ class Boid
                         // 0 = no change
                         // 1 = add
                         // 2 = subtract
-        float v_factor = 7*dt*radius;
+        float v_factor = 10*dt*radius;
         float old_v = v;
         if (kinematic.getSpeed() < kinematic.max_speed) { // increase speed
            v = v_factor;
@@ -74,7 +74,8 @@ class Boid
               waypoints.remove(0);
               seek(waypoints.get(0));
               //v += 4*dt;  
-              v = 0;
+              //v = 0;
+            v = -v_factor*3;
               //println("TARGET HIT");
             } else if(waypoints == null || waypoints.size() == 1) { // no more waypoints
               v = 0;

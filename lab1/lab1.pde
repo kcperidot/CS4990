@@ -39,8 +39,13 @@ void mousePressed() {
      
      if (waypoints.size() == 0)
      {
-       waypoints = nm.findPath(billy.kinematic.position, target);
-       billy.follow(waypoints);
+       if(nm.nodes.size() > 1){
+         waypoints = nm.findPath(billy.kinematic.position, target);
+         billy.follow(waypoints);
+       }else{
+         billy.seek(target);
+         print("here");
+       }
      }
      else
      {

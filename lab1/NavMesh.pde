@@ -208,7 +208,7 @@ class NavMesh
             frontier.add(temp1);
           }
         }
-        result.add(frontier.get(0).current.center);
+        result.add(currentn.neighbors.get(0).connections.get(0).center());
       }
     }
     
