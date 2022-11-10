@@ -1,4 +1,4 @@
-// Useful to sort lists by a custom key //<>//
+// Useful to sort lists by a custom key //<>// //<>//
 import java.util.Comparator;
 
 
@@ -58,6 +58,7 @@ class NavMesh
   //int counter;
   ArrayList<Wall> divisionLines; // division walls
   int[] polygonIndex; // index of corresponding DL node
+  int id;
   void bake(Map map)
   {
     /// generate the graph you need for pathfinding
@@ -66,6 +67,7 @@ class NavMesh
     nodes = new ArrayList<Node>();
     hp  = new ArrayList<PVector>();
     divisionLines = new ArrayList<Wall>();
+    id = 0;
     //counter = 0;
     //lines = new ArrayList<PVector>();
     //breakdown(map.walls);
@@ -196,7 +198,6 @@ class NavMesh
     return false;
   }
   
-  int id = 0;
   void breakdown(Node node) {
     boolean isBrokenDown = false;
     int len = node.polygon.size();
