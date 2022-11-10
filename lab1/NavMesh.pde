@@ -146,7 +146,7 @@ class NavMesh
     Node currentn;
     int startnode = 0;
     int destnode = 0;
-    ArrayList<PVector> result = null;
+    ArrayList<PVector> result = new ArrayList<PVector>();
     
     //find which polygon the boid is in
     for(int i = 0; i < nodes.size(); i++){
@@ -159,19 +159,19 @@ class NavMesh
     } 
     //add entry to frontier
     frontier.add(new FrontierEntry(nodes.get(startnode), null, PVector.sub(nodes.get(startnode).center, start), PVector.sub(destination, nodes.get(startnode).center)));
-    currentn = frontier.get(0).current;
-    
-    while(frontier.get(0).current != nodes.get(destnode)){
-    //add neighbors to frontier
-    for(int i = 0; i < currentn.neighbors.size(); i++){
-      frontier.add(new FrontierEntry(currentn.neighbors.get(i), frontier.get(0).current, PVector.sub(currentn.neighbors.get(i).center, start), PVector.sub(destination, currentn.neighbors.get(i).center)));
-    }
-    //add to result
-    result.add(frontier.get(0).current);
-    //remove highest priority
-    frontier.remove(0);
-    //sort accordign to priority
-    frontier.sort(new FrontierCompare());
+        
+    while(frontier.get(0).current.id != destnode){
+      currentn = frontier.get(0).current;
+      //add neighbors to frontier
+      for(int i = 0; i < currentn.neighbors.size(); i++){
+        frontier.add(new FrontierEntry(currentn.neighbors.get(i), frontier.get(0).current, PVector.sub(currentn.neighbors.get(i).center, start), PVector.sub(destination, currentn.neighbors.get(i).center)));
+      }
+      //add to result
+      result.add(currentn.neighbors.get(0).connections.get(0).center());
+      //remove highest priority
+      frontier.remove(0);
+      //sort accordign to priority
+      frontier.sort(new FrontierCompare());
     }
     //println(startnode);
     
