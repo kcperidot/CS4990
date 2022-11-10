@@ -39,7 +39,8 @@ void mousePressed() {
      
      if (waypoints.size() == 0)
      {
-        billy.seek(target);
+       nm.findPath(BILLY_START, target);
+       billy.seek(target);
      }
      else
      {

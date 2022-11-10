@@ -145,12 +145,16 @@ class NavMesh
   {
     /// implement A* to find a path
     ArrayList<FrontierEntry> frontier = new ArrayList<FrontierEntry>();
+    ArrayList<Integer> test = new ArrayList<Integer>();
+    ArrayList<Node> visited = new ArrayList<Node>();
     Node currentn;
     int startnode = 0;
     int destnode = 0;
+    
     ArrayList<PVector> result = new ArrayList<PVector>();
     
     //find which polygon the boid is in
+    if(nodes.size() != 0){
     for(int i = 0; i < nodes.size(); i++){
       if(isPointInPolygon(start, nodes.get(i).polygon)){
         startnode = i;
@@ -159,24 +163,35 @@ class NavMesh
         destnode = i;
       }
     } 
+    }
+    println(startnode + " " + destnode);
     //add entry to frontier
     frontier.add(new FrontierEntry(nodes.get(startnode), null, PVector.sub(nodes.get(startnode).center, start), PVector.sub(destination, nodes.get(startnode).center)));
-        
+    test.add(frontier.get(0).current.id);    
     while(frontier.get(0).current.id != destnode){
       currentn = frontier.get(0).current;
+      visited.add(currentn);
       //add neighbors to frontier
       for(int i = 0; i < currentn.neighbors.size(); i++){
-        frontier.add(new FrontierEntry(currentn.neighbors.get(i), frontier.get(0).current, PVector.sub(currentn.neighbors.get(i).center, start), PVector.sub(destination, currentn.neighbors.get(i).center)));
+        for(int j = 0; j < visited.size(); j++){
+          if(visited.get(j).id != currentn.neighbors.get(i).id){
+            frontier.add(new FrontierEntry(currentn.neighbors.get(i), currentn, PVector.sub(currentn.neighbors.get(i).center, start), PVector.sub(destination, currentn.neighbors.get(i).center)));
+          }
+        }
       }
       //add to result
       result.add(currentn.neighbors.get(0).connections.get(0).center());
+
+      test.add(currentn.neighbors.get(0).id);
       //remove highest priority
       frontier.remove(0);
       //sort accordign to priority
       frontier.sort(new FrontierCompare());
     }
     //println(startnode);
-    
+    for(int i = 0; i < test.size(); i++){
+      println(test.get(i) + ".");
+    }
     return result;
   }
 
