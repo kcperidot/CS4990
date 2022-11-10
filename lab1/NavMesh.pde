@@ -7,10 +7,26 @@ import java.util.Comparator;
 /// This node representation is just a suggestion
 class Node
 {
-  Node(int id, ArrayList<Wall> polygon, PVector center) {
+  Node(ArrayList<Wall> polygon) {
+    this.polygon = polygon;
+    neighbors = new ArrayList<Node>();
+    connections = new ArrayList<Wall>();
+    index = new int[polygon.size()];
+    for(int i = 0; i < polygon.size(); i++) {
+      index[i] = -1;
+    }
+  }
+  /*Node(int id, ArrayList<Wall> polygon, PVector center) {
     this.id = id;
     this.polygon = polygon;
     this.center = center;
+    index = new int[polygon.size()];
+  }*/
+  Node(ArrayList<Wall> polygon, int[] index) {
+    this.polygon = polygon;
+    neighbors = new ArrayList<Node>();
+    connections = new ArrayList<Wall>();
+    this.index = index;
   }
   Node(int id, ArrayList<Wall> polygon, PVector center, ArrayList<Node> neighbors, ArrayList<Wall> connections) {
     this.id = id;
@@ -18,12 +34,14 @@ class Node
     this.center = center;
     this.neighbors = neighbors;
     this.connections = connections;
+    index = new int[polygon.size()];
   }
   int id;
   ArrayList<Wall> polygon;
   PVector center;
   ArrayList<Node> neighbors;
   ArrayList<Wall> connections;
+  int[] index; // index of divisionList containing the wall it divides by
 }
 
 
@@ -38,6 +56,8 @@ class NavMesh
   ArrayList<PVector> hp; // halfway points (idk why they're drawn like eyeballs)
   //ArrayList<PVector> lines;  
   //int counter;
+  ArrayList<Wall> divisionLines; // division walls
+  int[] polygonIndex; // index of corresponding DL node
   void bake(Map map)
   {
     /// generate the graph you need for pathfinding
@@ -45,9 +65,72 @@ class NavMesh
 
     nodes = new ArrayList<Node>();
     hp  = new ArrayList<PVector>();
+    divisionLines = new ArrayList<Wall>();
     //counter = 0;
     //lines = new ArrayList<PVector>();
-    breakdown(map.walls);
+    //breakdown(map.walls);
+    breakdown(new Node(map.walls));
+    
+    // update neighbor
+    polygonIndex = new int[10];//divisionLines.size()];
+    for(int i = 0; i < polygonIndex.length; i++) {
+      polygonIndex[i] = -1;
+    }
+      //printArray(polygonIndex);
+    
+    for(int i = 0; i < nodes.size(); i++) {
+      for(int j = 0; j < nodes.get(i).index.length; j++) {
+        if(nodes.get(i).index[j] != -1) { // ie has a neighbor
+          int curPIndex = nodes.get(i).index[j];
+          //if(polygonIndex[nodes.get(i).index[j]] == -1) {
+          if(polygonIndex[curPIndex] == -1) { // first to be looking for that entry
+            //polygonIndex[nodes.get(i).index[j]] = i;
+            polygonIndex[curPIndex] = i;
+          } else {
+            /*nodes.get(i).neighbors.add(nodes.get(polygonIndex[nodes.get(i).index[j]]));
+            nodes.get(i).connections.add(divisionLines.get(i));
+            nodes.get(polygonIndex[nodes.get(i).index[j]]).neighbors.add(nodes.get(i));
+            nodes.get(polygonIndex[nodes.get(i).index[j]]).connections.add(divisionLines.get(i));// */
+            
+            // neighbors
+            //nodes.get(i).neighbors.add(nodes.get(i));
+            nodes.get(i).neighbors.add(nodes.get(polygonIndex[curPIndex]));
+            nodes.get(polygonIndex[curPIndex]).neighbors.add(nodes.get(i));
+            //print(polygonIndex[curPIndex]);
+            //nodes.get(polygonIndex[curPIndex]).neighbors.add(nodes.get(i));
+            
+            // connections
+            //nodes.get(i).connections.add(divisionLines.get(i));
+            //nodes.get(polygonIndex[curPIndex]).connections.add(divisionLines.get(i));
+            
+            //nodes.get(i).connections.add(divisionLines.get(nodes.get(i).index[j]));
+            //nodes.get(polygonIndex[curPIndex]).connections.add(divisionLines.get(nodes.get(i).index[j]));
+            //nodes.get(i).connections.add(divisionLines.get(0));
+            //nodes.get(polygonIndex[curPIndex]).connections.add(divisionLines.get(0));
+            //nodes.get(polygonIndex[curPIndex]).connections.add(divisionLines.get(nodes.get(polygonIndex[curPIndex]).index[j]));
+          }
+        }
+      }
+      
+      /*print("node ", nodes.get(i).id, "   ");
+      for(int j = 0; j < nodes.get(i).neighbors.size(); j++) {
+        print(nodes.get(i).neighbors.get(j).id, " ");
+      } // 
+      println();*/
+    }
+    
+    
+    if(nodes != null) {
+    for(int i = 0; i < nodes.size(); i++) {
+       print("node ", nodes.get(i).id, "   ");
+      for(int j = 0; j < nodes.get(i).neighbors.size(); j++) {
+        print(nodes.get(i).neighbors.get(j).id, " ");
+      } // 
+      println();
+    }
+    }
+    
+    
   }
 
   ArrayList<PVector> findPath(PVector start, PVector destination)
@@ -74,8 +157,127 @@ class NavMesh
     }
     return false;
   }
+  
   int id = 0;
-  void breakdown(ArrayList<Wall> bdpolygon) {
+  void breakdown(Node node) {
+    boolean isBrokenDown = false;
+    int len = node.polygon.size();
+
+    if (len > 3) { // polygons with 3 walls are always convex
+      for (int i = 0; i < len; i++) { // for each wall in polygon
+        //println("loop ", i);
+        if (node.polygon.get(i).normal.dot(node.polygon.get((i+1)%len).direction) > 0) { // if reflex
+
+          isBrokenDown = true; // break down polygon, ie DO NOT ADD TO LIST (not convex)
+
+          for (int j = 2; j < len-1; j++) { // check all nodes; 0 ----- start ----- end ----- len
+            // check all points except neighbors
+
+            int start = i;
+            int end = (i+j)%len;
+            if (start > end) {
+              int temp = start;
+              start = end;
+              end = temp;
+            }
+
+            if (placeable(node.polygon.get(i).end, node.polygon.get((i+j)%len).end)) { //if legal line exists
+            //lines.add(bdpolygon.get(end).end);
+            //lines.add(bdpolygon.get(start).end);
+
+              // LOCAL VARIABLES ARE FREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+
+              // left: 0:i-1, newLine(st, end), j:len
+              //print("left ");
+              ArrayList<Wall> left = new ArrayList<Wall>();
+              //Node leftNode = new Node();
+              int[] leftDL = new int[node.polygon.size() - (end - start) +1];
+              //int[] leftDL = new int[node.polygon.size()];
+              for(int z = 0; z < leftDL.length; z++) {
+                leftDL[z] = 600;
+              }
+              for (int l = 0; l <= start; l++) { // 0:i-1
+                left.add(node.polygon.get(l));
+                //leftNode.index[l] = node.index[l];
+                //leftDL[l] = node.index[l];
+                leftDL[left.size()-1] = node.index[l];
+                //print(l, " ");
+              }
+              divisionLines.add(new Wall(node.polygon.get(start).end, node.polygon.get(end).end));
+              int currentDl = divisionLines.size();
+              //leftNode.index[left.size()] = currentDl;
+              left.add(new Wall(node.polygon.get(start).end, node.polygon.get(end).end)); //newLine(st, end)
+              leftDL[left.size()-1] = currentDl;
+              for (int l = end+1; l < len; l++) { // j:len
+                left.add(node.polygon.get(l));
+                //leftNode.index[l] = node.index[l];
+                //leftDL[l] = node.index[l];
+                 leftDL[left.size()-1] = node.index[l];
+                //print(l, " ");
+              }
+              //leftNode.polygon = left;
+              //breakdown(leftNode);
+              breakdown(new Node(left, leftDL));
+
+              // right: i:j, newLine(end, st)
+              //print("right ");
+              ArrayList<Wall> right = new ArrayList<Wall>();
+              int[] rightDL = new int[end-start +1];
+              //int[] rightDL = new int[node.polygon.size()];
+              for(int z = 0; z < rightDL.length; z++) {
+                rightDL[z] = 600;
+              }
+              //Node rightNode = new Node();
+              for (int r = start+1; r <= end; r++) { // i:j
+                right.add(node.polygon.get(r%len));
+                //rightNode.index[r] = node.index[r];
+                //rightDL[r] = node.index[r];
+                rightDL[right.size()-1] = node.index[r];
+                //print(r, " ");
+              }
+              right.add(new Wall(node.polygon.get(end).end, node.polygon.get(start).end)); //newLine(end, st)
+              //rightNode.index[right.size()] = currentDl;
+              rightDL[right.size()-1] = currentDl;
+              //rightNode.polygon = right;
+              //breakdown(rightNode);
+              breakdown(new Node(right, rightDL));
+
+              if (left.size() + right.size() != node.polygon.size()+2) {
+                print("critical failure");
+              }
+
+              return;
+              
+            }
+          }
+        }
+      }//*/
+    }
+
+    if (!isBrokenDown) {
+      // add polygon to list
+      
+      PVector center = new PVector(0,0,0);
+      for(int i = 0; i < node.polygon.size(); i++) {
+        center = PVector.add(center, node.polygon.get(i).center());
+      }
+      //print(center);
+      center = PVector.div(center, (float) node.polygon.size());
+      node.id = id;
+      id++;
+      node.center = center;
+      nodes.add(node);
+      //print(node.index.toString());
+      //printArray(node.index);
+      /*print("node ", node.id, "   ");
+      for(int i = 0; i < node.index.length; i++) {
+        print(node.index[i], " ");
+      }*/
+      println();
+      return;
+    }
+  } //}
+  /*void breakdown(ArrayList<Wall> bdpolygon) {
     //if(counter <5) {
       //counter++;
     boolean isBrokenDown = false;
@@ -138,7 +340,7 @@ class NavMesh
             }
           }
         }
-      }//*/
+      }//
     }
 
     if (!isBrokenDown) {
@@ -156,7 +358,7 @@ class NavMesh
       //println(bdpolygon.size());
       return;
     }
-  } //}
+  } //}*/
 
 
   void update(float dt)
@@ -175,7 +377,7 @@ class NavMesh
       nodesAmt = nodes.size();
       //line(polygon.get(i).end.x, polygon.get(i).end.y, polygon.get((i+j)%len).end.x, polygon.get((i+j)%len).end.y);
       for (int i = 0; i < nodes.size(); i++) {
-      stroke(255, 200, 200);
+        stroke(255, 200, 200);
         for (int j = 0; j < nodes.get(i).polygon.size(); j++) {
 
           //textFont(createFont("Arial", 16, true), 16);
@@ -186,6 +388,9 @@ class NavMesh
         }
         stroke(255, 100, 100);
         circle(nodes.get(i).center.x, nodes.get(i).center.y, 3); // centers
+        textFont(createFont("Arial",16,true),16);
+        text(nodes.get(i).id,nodes.get(i).center.x,nodes.get(i).center.y);
+        //println(nodes.get(i).index);
       }
       //println("draw");
     }//*/
