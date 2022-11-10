@@ -77,6 +77,7 @@ class NavMesh
       polygonIndex[i] = -1;
     }
       //printArray(polygonIndex);
+      //print(divisionLines.size());
     
     for(int i = 0; i < nodes.size(); i++) {
       for(int j = 0; j < nodes.get(i).index.length; j++) {
@@ -105,6 +106,9 @@ class NavMesh
             
             //nodes.get(i).connections.add(divisionLines.get(nodes.get(i).index[j]));
             //nodes.get(polygonIndex[curPIndex]).connections.add(divisionLines.get(nodes.get(i).index[j]));
+            //println(nodes.get(i).index[j]);
+            nodes.get(i).connections.add(divisionLines.get(nodes.get(i).index[j] - 1));
+            nodes.get(polygonIndex[curPIndex]).connections.add(divisionLines.get(nodes.get(i).index[j] - 1));
             //nodes.get(i).connections.add(divisionLines.get(0));
             //nodes.get(polygonIndex[curPIndex]).connections.add(divisionLines.get(0));
             //nodes.get(polygonIndex[curPIndex]).connections.add(divisionLines.get(nodes.get(polygonIndex[curPIndex]).index[j]));
