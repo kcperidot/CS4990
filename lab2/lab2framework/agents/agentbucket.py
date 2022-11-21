@@ -3,15 +3,16 @@ import util
 import agent
 import random
 
-class InnerStatePlayer(agent.Agent):
+'''class InnerPlayer(agent.Agent):
     def __init__(self, name, pnr):
         self.name = name
         self.explanation = []
     def get_action(self, nr, hands, knowledge, trash, played, board, valid_actions, hints, hits, cards_left):
+        
         #nr: tells the agent their player number
         
         #suggestion: at the beginning of turn, if there is a 5 in player deck, ai will use hint to warn
-        '''my_knowledge = knowledge[nr]
+        my_knowledge = knowledge[nr]
         
         potential_discards = []
         for i,k in enumerate(my_knowledge):
@@ -42,13 +43,26 @@ def format_hint(h):
         return "color"
     return "rank"
         
-class OuterStatePlayer(agent.Agent):
+class BucketHatPlayer(agent.Agent):
     def __init__(self, name, pnr):
         self.name = name
         self.hints = {}
         self.pnr = pnr
         self.explanation = []
     def get_action(self, nr, hands, knowledge, trash, played, board, valid_actions, hints, hits, cards_left):
+        #write most of code here
+        my_knowledge = knowledge[nr]
+
+        potential_discards = []
+        for i,k in enumerate(my_knowledge):
+            if util.is_playable(k, board):
+                return Action(PLAY, card_index=i)
+            if util.is_useless(k, board):    
+                potential_discards.append(i)
+
+        if potential_discards:
+            return Action(DISCARD, card_index=random.choice(potential_discards))
+
         '''for player,hand in enumerate(hands):
             for card_index,_ in enumerate(hand):
                 if (player,card_index) not in self.hints:
@@ -135,5 +149,4 @@ class OuterStatePlayer(agent.Agent):
                     self.hints[(player,action.card_index+i)] = self.hints[(player,action.card_index+i+1)]
                     self.hints[(player,action.card_index+i+1)] = set()'''
 
-agent.register("inner", "Inner State Player", InnerStatePlayer)
-agent.register("outer", "Outer State Player", OuterStatePlayer)
+agent.register("agent", "Bucket Hat Player", BucketHatPlayer)
