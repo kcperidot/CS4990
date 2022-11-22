@@ -1,14 +1,16 @@
+# https://twitter.com/svmvsvb/status/1590581793509736454?s=46&t=N12MRNI-GDWZ4t8SIlLRQQ
+
 from hanabi import *
 import util
 import agent
 import random
-        
+
 def format_hint(h):
     if h == HINT_COLOR:
         return "color"
     return "rank"
         
-class BucketHatPlayer(agent.Agent):
+class QuaquavalsRun(agent.Agent):
     def __init__(self, name, pnr):
         self.name = name
         self.hints = {}
@@ -36,8 +38,8 @@ class BucketHatPlayer(agent.Agent):
                 potential_discards.append(i)
                 
         if potential_discards:
-            return Action(DISCARD, card_index=random.choice(potential_discards))
-            #return Action(DISCARD, card_index=0)
+            #return Action(DISCARD, card_index=random.choice(potential_discards))
+            return Action(DISCARD, card_index=0)
          
         playables = []        
         for player,hand in enumerate(hands):
@@ -102,4 +104,4 @@ class BucketHatPlayer(agent.Agent):
                     self.hints[(player,action.card_index+i)] = self.hints[(player,action.card_index+i+1)]
                     self.hints[(player,action.card_index+i+1)] = set()
 
-agent.register("buckethat", "Bucket Hat Player", BucketHatPlayer)
+agent.register("qqrun", "Quaquaval's Run", QuaquavalsRun)
