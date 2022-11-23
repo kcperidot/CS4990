@@ -92,7 +92,7 @@ class BucketHatPlayer(agent.Agent):
             return hintgiven
 
         #return random.choice(util.filter_actions(DISCARD, valid_actions))
-        return Action(DISCARD, card_index=0)
+        return Action(DISCARD, card_index=0) # CHANGE 1
 
     def inform(self, action, player):
         if action.type in [PLAY, DISCARD]:
