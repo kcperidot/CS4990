@@ -34,10 +34,10 @@ class BucketHatPlayer(agent.Agent):
                 return Action(PLAY, card_index=i)
             if util.is_useless(k, board):    
                 potential_discards.append(i)
-            if util.maybe_playable(k, board) and util.probability(util.playable(board), k) > 0.5: # change 2
+            if util.maybe_playable(k, board) and util.probability(util.playable(board), k) > 0.5 and hits > 1: # change 2
                 return Action(PLAY, card_index=i)
-            #if util.maybe_useless(k, board):
-                #potential_discards.append(i)
+            '''if util.maybe_useless(k, board) and util.probability(util.playable(board), k) < 0.05:
+                potential_discards.append(i)'''
                 
         if potential_discards:
             return Action(DISCARD, card_index=random.choice(potential_discards))
