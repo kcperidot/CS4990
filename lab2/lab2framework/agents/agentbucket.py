@@ -34,7 +34,7 @@ class BucketHatPlayer(agent.Agent):
                 return Action(PLAY, card_index=i)
             if util.is_useless(k, board):    
                 potential_discards.append(i)
-            if util.maybe_playable(k, board) and util.probability(util.playable(board), k) > 0.5 and hits > 1: # change 2
+            if util.maybe_playable(k, board) and util.probability(util.playable(board), k) > 0.5 and hits > 1: # CHANGE 2
                 return Action(PLAY, card_index=i)
             '''if util.maybe_useless(k, board) and util.probability(util.playable(board), k) < 0.05:
                 potential_discards.append(i)'''
@@ -135,6 +135,7 @@ class BucketHatPlayer(agent.Agent):
             return hintgiven
 
         #return random.choice(util.filter_actions(DISCARD, valid_actions))
+        # CHANGE 4
         hinted = False
         for i,card in enumerate(knowledge[nr]):
             for j,row in enumerate(card):
@@ -143,7 +144,7 @@ class BucketHatPlayer(agent.Agent):
                     break
             
             if not hinted:
-                return Action(DISCARD, card_index=j) # should be i but i is worse
+                return Action(DISCARD, card_index=i) # should be i but i is worse
             hinted = False
 
         return Action(DISCARD, card_index=0) # CHANGE 1
