@@ -81,6 +81,46 @@ class BucketHatPlayer(agent.Agent):
             playables = playables[1:]
  
         if hints > 0:
+            '''# CHANGE 3
+            # lowRank = [lowest HINT_RANK]
+            # hintGiven = [lowest HINT_RANK]
+            
+            #hintAction = random.choice(util.filter_actions(HINT_RANK, valid_actions))
+            hintAction = util.filter_actions(HINT_RANK, valid_actions)[-1]
+            lowRank = HINT_RANK
+            #self.hints[(hintAction.player,i)].add(HINT_RANK)
+            
+            for i,card in enumerate(hands[hintAction.player]):
+                if card.rank == HINT_RANK:
+                    self.hints[(hintAction.player,i)].add(HINT_RANK)
+                    lowRank = HINT_RANK
+                    break
+
+            #hintGiven = HINT_RANK
+
+            # for each color in util.filter_actions(HINT_COLOR, valid_actions)
+            #   for each card (in each hand):
+            #       if card.color == HINT_COLOR and card.rank < lowRank:
+            #           lowRank = card.rank
+            #            hintGiven = HINT_COLOR
+            
+            playersVisited = []
+            for j,action in enumerate(util.filter_actions(HINT_COLOR, valid_actions)):
+                if hands[action.player][action.card_index].color == action.color and hands[action.player][action.card_index].rank < lowRank:
+                    self.hints[(action.player,action.card_index)].add(HINT_COLOR)
+                    lowRank = HINT_RANK
+                pass
+                # if action.player not in playersVisited:
+                #     playersVisited.append(action.player)
+                #     for i,card in enumerate(hands[action.player]):
+                #         if card.color == action.color and card.rank < lowRank:
+                #             self.hints[(action.player,i)].add(HINT_COLOR)
+                #             lowRank = HINT_RANK
+                #             #hintGiven = HINT_COLOR
+
+            # return action
+            return hintAction#'''
+
             hints = util.filter_actions(HINT_COLOR, valid_actions) + util.filter_actions(HINT_RANK, valid_actions)
             hintgiven = random.choice(hints)
             if hintgiven.type == HINT_COLOR:
@@ -95,6 +135,17 @@ class BucketHatPlayer(agent.Agent):
             return hintgiven
 
         #return random.choice(util.filter_actions(DISCARD, valid_actions))
+        hinted = False
+        for i,card in enumerate(knowledge[nr]):
+            for j,row in enumerate(card):
+                if knowledge[nr][i][j][j] == 0: # check diagonal
+                    hinted = True
+                    break
+            
+            if not hinted:
+                return Action(DISCARD, card_index=j) # should be i but i is worse
+            hinted = False
+
         return Action(DISCARD, card_index=0) # CHANGE 1
 
     def inform(self, action, player):
