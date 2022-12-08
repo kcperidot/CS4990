@@ -38,6 +38,7 @@ class Wall
 class Map
 {
    ArrayList<Wall> walls;
+   ArrayList<ArrayList<MazeCell>> mazecells; // ArrayList of ArrayLists to easier sort MazeCells
    
    Map()
    {
@@ -46,9 +47,36 @@ class Map
   
    
    
-   void generate(int which)
+   //void generate(int which)
+   void generate(int size)
    {
       walls.clear();
+      mazecells = new ArrayList<ArrayList<MazeCell>>();
+      
+      for(int i = 0; i < 800/size; i++) { // width
+      ArrayList<MazeCell> mazecellrow = new ArrayList<MazeCell>();
+        for(int j = 0; j < 600/size; j++) { // height
+          mazecellrow.add(new MazeCell());
+          
+          // POINT1------POINT2
+          //   |           |
+          // POINT3------POINT4
+            // POINT1 = nw, nh
+            // POINT2 = n(w+1), nh
+            // POINT3 = nw, n(h+1)
+            // POINT4 = n(w+1), n(h+1)
+          
+          //    * WALL1 *
+          // WALL4     WALL2
+          //    * WALL3 *
+          walls.add(new Wall(new PVector(size*i, size*j),         new PVector(size*(i+1), size*j)));     // WALL1
+          walls.add(new Wall(new PVector(size*(i+1), size*j),     new PVector(size*(i+1), size*(j+1)))); // WALL2
+          walls.add(new Wall(new PVector(size*(i+1), size*(j+1)), new PVector(size*i, size*(j+1))));     // WALL3
+          walls.add(new Wall(new PVector(size*i, size*(j+1)),     new PVector(size*i, size*j)));         // WALL4
+        }
+        mazecells.add(mazecellrow);
+      }
+      
    }
    
    void update(float dt)
@@ -65,4 +93,10 @@ class Map
          w.draw();
       }
    }
+}
+
+class MazeCell
+{
+  boolean visited = false;
+  ArrayList<MazeCell> neighbors = new ArrayList<MazeCell>();
 }

@@ -11,7 +11,8 @@ Map map = new Map();
 void setup() {
   size(800, 600);
   randomSeed(0);
-  map.generate(-2);
+  //map.generate(-2);
+  map.generate(GRID_SIZE);
 }
 
 
@@ -19,7 +20,7 @@ void keyPressed()
 {
     if (key == 'g')
     {
-       map.generate(-2);
+       map.generate(GRID_SIZE);
     }
 }
 
