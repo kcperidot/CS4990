@@ -39,6 +39,7 @@ class Map
 {
    ArrayList<Wall> walls;
    ArrayList<ArrayList<MazeCell>> mazecells; // ArrayList of ArrayLists to easier sort MazeCells
+   ArrayList<MazeCell> frontier;
    
    Map()
    {
@@ -52,12 +53,18 @@ class Map
    {
       walls.clear();
       mazecells = new ArrayList<ArrayList<MazeCell>>();
+      int rows = 800/size;
+      int cols = 600/size;
       
-      for(int i = 0; i < 800/size; i++) { // width
+      
+      // CREATE MAZE CELLS
+      for(int i = 0; i < rows; i++) { // width
       ArrayList<MazeCell> mazecellrow = new ArrayList<MazeCell>();
-        for(int j = 0; j < 600/size; j++) { // height
-          mazecellrow.add(new MazeCell());
+      
+        for(int j = 0; j < cols; j++) { // height
+          mazecellrow.add(new MazeCell(i, j, new PVector(size*(i+0.5), size*(j+0.5)) ) );
           
+          // it was art and it was beautiful
           // POINT1------POINT2
           //   |           |
           // POINT3------POINT4
@@ -74,7 +81,48 @@ class Map
           walls.add(new Wall(new PVector(size*(i+1), size*(j+1)), new PVector(size*i, size*(j+1))));     // WALL3
           walls.add(new Wall(new PVector(size*i, size*(j+1)),     new PVector(size*i, size*j)));         // WALL4
         }
+        
         mazecells.add(mazecellrow);
+      }
+      
+      
+      // GENERATE GRAPH
+      frontier = new ArrayList<MazeCell>();
+      
+      // add random cell to frontier
+      MazeCell curCel = mazecells.get(int(random(rows))).get(int(random(cols)));
+      curCel.visited = true;
+      frontier.add(curCel);
+      
+      int r = curCel.row;
+      int c = curCel.col;
+      if(r-1 >= 0) // add top neighbor (if exists + unvisited)
+      {
+        MazeCell newCel = mazecells.get(r-1).get(c);
+        if(!newCel.visited) {
+          frontier.add(newCel);
+        }
+      }      
+      if(c-1 >= 0) // add left neighbot (if exists + unvisited)
+      {
+        MazeCell newCel = mazecells.get(r).get(c-1);
+        if(!newCel.visited) {
+          frontier.add(newCel);
+        }
+      }
+      if(c+1 < cols) // add right neighbot (if exists + unvisited)
+      {
+        MazeCell newCel = mazecells.get(r).get(c+1);
+        if(!newCel.visited) {
+          frontier.add(newCel);
+        }
+      }
+      if(r+1 < rows) // add bottom neighbor (if exists + unvisited)
+      {
+        MazeCell newCel = mazecells.get(r+1).get(c);
+        if(!newCel.visited) {
+          frontier.add(newCel);
+        }
       }
       
    }
@@ -92,6 +140,16 @@ class Map
       {
          w.draw();
       }
+      
+      /*for(ArrayList<MazeCell> r : mazecells) {
+        for(MazeCell c : r) {
+          c.draw();
+        }
+      }*/
+      
+      for(MazeCell m : frontier) {
+        m.draw();
+      }
    }
 }
 
@@ -99,4 +157,22 @@ class MazeCell
 {
   boolean visited = false;
   ArrayList<MazeCell> neighbors = new ArrayList<MazeCell>();
+  int row;
+  int col;
+  PVector center;
+  
+  MazeCell() {   
+  }
+  
+  MazeCell(int row, int col, PVector center) {
+    this.row = row;
+    this.col = col;
+    this.center = center;
+  }
+  
+  // idk
+  void draw() {
+    stroke(23, 255, 23);
+    circle(center.x, center.y, 5);
+  }
 }
