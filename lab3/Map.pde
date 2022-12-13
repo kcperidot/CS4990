@@ -40,6 +40,7 @@ class Map
    ArrayList<Wall> walls;
    ArrayList<ArrayList<MazeCell>> mazecells; // ArrayList of ArrayLists to easier sort MazeCells
    ArrayList<MazeCell> frontier;
+   ArrayList <MazeCell> done;
    
    Map()
    {
@@ -88,11 +89,16 @@ class Map
       
       // GENERATE GRAPH
       frontier = new ArrayList<MazeCell>();
+      done = new ArrayList<MazeCell>();
       
-      // add random cell to frontier
+      
       MazeCell curCel = mazecells.get(int(random(rows))).get(int(random(cols)));
-      curCel.visited = true;
       frontier.add(curCel);
+      
+      while(curCel.visited == false){
+      curCel.visited = true;
+      done.add(curCel);
+      frontier.remove(curCel);
       
       int r = curCel.row;
       int c = curCel.col;
@@ -124,6 +130,32 @@ class Map
           frontier.add(newCel);
         }
       }
+      // add random cell to frontier
+      for(int i = 0; i < frontier.size(); i++){
+        MazeCell newCel = frontier.get(int(random(frontier.size())));
+        if(!newCel.visited){
+          curCel.neighbors.add(newCel); //newCel might not be adjacent to curCel; have to fix
+          curCel = newCel;
+          break;
+        }else{
+          newCel = frontier.get(int(random(frontier.size())));
+        }
+      }
+      
+      }
+      
+      //choose random wall
+      
+      //check if node on other side has been visited
+      //if not, add connection
+      /*MazeCell next = frontier.get((int)random(4));
+      if(!next.visited){
+        curCel = next;
+        next.visited = true;
+        frontier.add();
+      }*/
+      
+      //remove wall from frontier
       
    }
    
@@ -149,6 +181,13 @@ class Map
       
       for(MazeCell m : frontier) {
         m.draw();
+      }
+      
+      for(MazeCell m : done) {
+        for(MazeCell n : m.neighbors) {
+          line(m.center.x, m.center.y, n.center.x, n.center.y);
+          println("i");
+        }
       }
    }
 }
