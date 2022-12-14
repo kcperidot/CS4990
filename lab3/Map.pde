@@ -135,6 +135,9 @@ class Map
         }
       }
       // add random cell to frontier
+      if(frontier.size() == 0){
+      break;
+      }
       MazeCell newCel = frontier.get(int(random(frontier.size())));
       for(int j = 0; j < frontier.size(); j++){
       if(newCel.visited == false){
