@@ -201,12 +201,37 @@ class Map
           }
         }
         
+        // 7. Add random node to tree
         randFrontier.visited = true;
         done.add(randFrontier);
       }
       frontier.remove(frontierNo);
     }
-      
+      for(int i = 0; i < rows; i++) {
+        for(int j = 1; j < cols; j++){
+          //mazecells.get(i).get(j).neighbors.size();
+          r = mazecells.get(i).get(j).row;
+          c = mazecells.get(i).get(j).col;
+          int nrow = mazecells.get(i).get(j).neighbors.get(0).row;
+          int ncol = mazecells.get(i).get(j).neighbors.get(0).col;
+          
+          if(ncol - c == -1 && nrow - r == 0){
+            walls.add(new Wall(new PVector(size*(r+1), size*c),     new PVector(size*(r+1), size*(c+1)))); // WALL2
+            walls.add(new Wall(new PVector(size*(r+1), size*(c+1)), new PVector(size*r, size*(c+1))));     // WALL3
+          }
+          else if(ncol - c == 0 && nrow - r == 1){
+            //walls.add(new Wall(new PVector(size*(r+1), size*c),     new PVector(size*(r+1), size*(c+1)))); // WALL2
+          }
+          else if(ncol - c == 1){
+            //walls.add(new Wall(new PVector(size*(r+1), size*(c+1)), new PVector(size*r, size*(c+1))));     // WALL3
+          }
+          else{
+            //walls.add(new Wall(new PVector(size*(r+1), size*c),     new PVector(size*(r+1), size*(c+1)))); // WALL2
+            //walls.add(new Wall(new PVector(size*(r+1), size*(c+1)), new PVector(size*r, size*(c+1))));     // WALL3
+          }
+          
+        }      
+      }
    }
    
    void update(float dt)
