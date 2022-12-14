@@ -99,7 +99,7 @@ class Map
       //walls.add(new Wall(new PVector(size*(curCel.row+1), size*(curCel.col+1)), new PVector(size*curCel.row, size*(curCel.col+1))));     // WALL3
       //walls.add(new Wall(new PVector(size*curCel.row, size*(curCel.col+1)),     new PVector(size*curCel.row, size*curCel.col)));         // WALL4
     
-      while(curCel.visited == false){
+      while(frontier.size() > 0){
       curCel.visited = true;
       done.add(curCel);
       frontier.remove(curCel);
@@ -158,6 +158,7 @@ class Map
         break;
       }else{
         newCel = frontier.get(int(random(frontier.size())));
+        frontier.remove(newCel);
       }
     }
   }
