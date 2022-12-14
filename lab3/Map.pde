@@ -94,10 +94,6 @@ class Map
       // 1. pick a random point
       MazeCell curCel = mazecells.get(int(random(rows))).get(int(random(cols)));
       frontier.add(curCel);
-      //walls.add(new Wall(new PVector(size*curCel.row, size*curCel.col),         new PVector(size*(curCel.row+1), size*curCel.col)));     // WALL1
-      //walls.add(new Wall(new PVector(size*(curCel.row+1), size*curCel.col),     new PVector(size*(curCel.row+1), size*(curCel.col+1)))); // WALL2
-      //walls.add(new Wall(new PVector(size*(curCel.row+1), size*(curCel.col+1)), new PVector(size*curCel.row, size*(curCel.col+1))));     // WALL3
-      //walls.add(new Wall(new PVector(size*curCel.row, size*(curCel.col+1)),     new PVector(size*curCel.row, size*curCel.col)));         // WALL4
       
       // 2. add point to maze
       curCel.visited = true;
@@ -158,8 +154,7 @@ class Map
             neighborCell.bottom = null;
             needsNeighbor = false;
           } else {
-            MazeCell newCel = neighborCell;
-            frontier.add(newCel);
+            frontier.add(neighborCell);
           }
         }      
         if(c-1 >= 0) // add left neighbot (if exists + unvisited)
@@ -172,8 +167,7 @@ class Map
             neighborCell.right = null;
             needsNeighbor = false;
           } else {
-            MazeCell newCel = neighborCell;
-            frontier.add(newCel);
+            frontier.add(neighborCell);
           }
         }
         if(c+1 < cols) // add right neighbor (if exists + unvisited)
@@ -186,8 +180,7 @@ class Map
             randFrontier.right = null;
             needsNeighbor = false;
           } else {
-            MazeCell newCel = neighborCell;
-            frontier.add(newCel);
+            frontier.add(neighborCell);
           }
         }
         if(r+1 < rows) // add bottom neighbor (if exists + unvisited)
@@ -200,8 +193,7 @@ class Map
             randFrontier.bottom = null;
             needsNeighbor = false;
           } else {
-            MazeCell newCel = neighborCell;
-            frontier.add(newCel);
+            frontier.add(neighborCell);
           }
         }
         
@@ -211,31 +203,6 @@ class Map
       }
       frontier.remove(frontierNo);
     }
-      for(int i = 0; i < rows; i++) {
-        for(int j = 1; j < cols; j++){
-          //mazecells.get(i).get(j).neighbors.size();
-          r = mazecells.get(i).get(j).row;
-          c = mazecells.get(i).get(j).col;
-          int nrow = mazecells.get(i).get(j).neighbors.get(0).row;
-          int ncol = mazecells.get(i).get(j).neighbors.get(0).col;
-          
-          /*if(ncol - c == -1 && nrow - r == 0){
-            walls.add(new Wall(new PVector(size*(r+1), size*c),     new PVector(size*(r+1), size*(c+1)))); // WALL2
-            walls.add(new Wall(new PVector(size*(r+1), size*(c+1)), new PVector(size*r, size*(c+1))));     // WALL3
-          }
-          else if(ncol - c == 0 && nrow - r == 1){
-            //walls.add(new Wall(new PVector(size*(r+1), size*c),     new PVector(size*(r+1), size*(c+1)))); // WALL2
-          }
-          else if(ncol - c == 1){
-            //walls.add(new Wall(new PVector(size*(r+1), size*(c+1)), new PVector(size*r, size*(c+1))));     // WALL3
-          }
-          else{
-            //walls.add(new Wall(new PVector(size*(r+1), size*c),     new PVector(size*(r+1), size*(c+1)))); // WALL2
-            //walls.add(new Wall(new PVector(size*(r+1), size*(c+1)), new PVector(size*r, size*(c+1))));     // WALL3
-          }*/
-          
-        }      
-      }
    }
    
    void update(float dt)
@@ -247,10 +214,13 @@ class Map
    {
       stroke(255);
       strokeWeight(3);
+      // draw maze walls
       for (Wall w : walls)
       {
          w.draw();
       }
+      
+      // draw borders of canvas
       if(mazecells != null) {
         line(0,0,0,GRID_SIZE*mazecells.get(0).size()); //top
         line(0,GRID_SIZE*mazecells.get(0).size(),GRID_SIZE*mazecells.size(),GRID_SIZE*mazecells.get(0).size()); //right
@@ -258,27 +228,23 @@ class Map
         line(0,0,GRID_SIZE*mazecells.size(),0); //left
       }
       
-      /*for(ArrayList<MazeCell> r : mazecells) {
-        for(MazeCell c : r) {
-          c.draw();
-        }
-      }*/
-      
-      for(MazeCell m : frontier) {
+      /*for(MazeCell m : frontier) {
         m.draw();
-      }
+      }*/
       
       stroke(255, 150, 150);
       for(MazeCell m : done) {
+        // draw walls
         if(m.bottom != null){
           walls.add(m.bottom);
         }
         if(m.right != null){
           walls.add(m.right);
         }
+        
+        // draw tree
         for(MazeCell n : m.neighbors) {
           line(m.center.x, m.center.y, n.center.x, n.center.y);
-          //println("i");
         }
       }
    }
@@ -292,8 +258,6 @@ class MazeCell
   int col;
   Wall bottom;
   Wall right;
-  Wall left;
-  Wall top;
   PVector center;
   
   MazeCell() {   
@@ -303,12 +267,8 @@ class MazeCell
     this.row = row;
     this.col = col;
     this.center = center; 
-    right = new Wall(new PVector(size*(row+1), size*col),     new PVector(size*(row+1), size*(col+1))); // WALL2
+    right =  new Wall(new PVector(size*(row+1), size*col),     new PVector(size*(row+1), size*(col+1))); // WALL2
     bottom = new Wall(new PVector(size*(row+1), size*(col+1)), new PVector(size*row, size*(col+1)));     // WALL3
-    left = new Wall(new PVector(size*row, size*(col+1)),     new PVector(size*row, size*col));         // WALL4
-    top = new Wall(new PVector(size*row, size*col),         new PVector(size*(row+1), size*col));     // WALL1
-
-
   }
   
   // idk
