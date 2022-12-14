@@ -95,8 +95,8 @@ class Map
       MazeCell curCel = mazecells.get(int(random(rows))).get(int(random(cols)));
       frontier.add(curCel);
       //walls.add(new Wall(new PVector(size*curCel.row, size*curCel.col),         new PVector(size*(curCel.row+1), size*curCel.col)));     // WALL1
-      walls.add(new Wall(new PVector(size*(curCel.row+1), size*curCel.col),     new PVector(size*(curCel.row+1), size*(curCel.col+1)))); // WALL2
-      walls.add(new Wall(new PVector(size*(curCel.row+1), size*(curCel.col+1)), new PVector(size*curCel.row, size*(curCel.col+1))));     // WALL3
+      //walls.add(new Wall(new PVector(size*(curCel.row+1), size*curCel.col),     new PVector(size*(curCel.row+1), size*(curCel.col+1)))); // WALL2
+      //walls.add(new Wall(new PVector(size*(curCel.row+1), size*(curCel.col+1)), new PVector(size*curCel.row, size*(curCel.col+1))));     // WALL3
       //walls.add(new Wall(new PVector(size*curCel.row, size*(curCel.col+1)),     new PVector(size*curCel.row, size*curCel.col)));         // WALL4
     
       while(curCel.visited == false){
@@ -135,20 +135,26 @@ class Map
         }
       }
       // add random cell to frontier
-        MazeCell newCel = frontier.get(int(random(frontier.size())));
-        for(int j = 0; j < frontier.size(); j++){
+      MazeCell newCel = frontier.get(int(random(frontier.size())));
+      for(int j = 0; j < frontier.size(); j++){
       if(newCel.visited == false){
+        if(newCel.row - curCel.row == 0 && (newCel.col - curCel.col == -1 || newCel.col - curCel.col == 1)){
         curCel.neighbors.add(newCel);
-        curCel = newCel;
-        for(int i = 0; i < 2; i++){
-          //walls.add(new Wall(new PVector(size*curCel.row, size*curCel.col),         new PVector(size*(curCel.row+1), size*curCel.col)));     // WALL1
-          walls.add(new Wall(new PVector(size*(curCel.row+1), size*curCel.col),     new PVector(size*(curCel.row+1), size*(curCel.col+1)))); // WALL2
-          walls.add(new Wall(new PVector(size*(curCel.row+1), size*(curCel.col+1)), new PVector(size*curCel.row, size*(curCel.col+1))));     // WALL3
-          //walls.add(new Wall(new PVector(size*curCel.row, size*(curCel.col+1)),     new PVector(size*curCel.row, size*curCel.col)));         // WALL4
-    
+        newCel.neighbors.add(curCel);        
         }
-        //print(walls.size());
+        if(newCel.col - curCel.col == 0 && (newCel.row - curCel.row == -1 || newCel.row - curCel.row == 1)){
+        curCel.neighbors.add(newCel);
+        newCel.neighbors.add(curCel);
+        }
         
+        
+        //walls.add(new Wall(new PVector(size*curCel.row, size*curCel.col),         new PVector(size*(curCel.row+1), size*curCel.col)));     // WALL1
+        walls.add(new Wall(new PVector(size*(r+1), size*c),     new PVector(size*(r+1), size*(c+1)))); // WALL2
+        walls.add(new Wall(new PVector(size*(r+1), size*(c+1)), new PVector(size*r, size*(c+1))));     // WALL3
+        //walls.add(new Wall(new PVector(size*curCel.row, size*(curCel.col+1)),     new PVector(size*curCel.row, size*curCel.col)));         // WALL4
+
+        curCel = newCel;
+        //print(walls.size());  
         break;
       }else{
         newCel = frontier.get(int(random(frontier.size())));
@@ -198,7 +204,7 @@ class Map
       for(MazeCell m : done) {
         for(MazeCell n : m.neighbors) {
           line(m.center.x, m.center.y, n.center.x, n.center.y);
-          println("i");
+          //println("i");
         }
       }
    }
