@@ -77,10 +77,10 @@ class Map
           //    * WALL1 *
           // WALL4     WALL2
           //    * WALL3 *
-          walls.add(new Wall(new PVector(size*i, size*j),         new PVector(size*(i+1), size*j)));     // WALL1
-          walls.add(new Wall(new PVector(size*(i+1), size*j),     new PVector(size*(i+1), size*(j+1)))); // WALL2
-          walls.add(new Wall(new PVector(size*(i+1), size*(j+1)), new PVector(size*i, size*(j+1))));     // WALL3
-          walls.add(new Wall(new PVector(size*i, size*(j+1)),     new PVector(size*i, size*j)));         // WALL4
+          //walls.add(new Wall(new PVector(size*i, size*j),         new PVector(size*(i+1), size*j)));     // WALL1
+          //walls.add(new Wall(new PVector(size*(i+1), size*j),     new PVector(size*(i+1), size*(j+1)))); // WALL2
+          //walls.add(new Wall(new PVector(size*(i+1), size*(j+1)), new PVector(size*i, size*(j+1))));     // WALL3
+          //walls.add(new Wall(new PVector(size*i, size*(j+1)),     new PVector(size*i, size*j)));         // WALL4
         }
         
         mazecells.add(mazecellrow);
@@ -94,7 +94,11 @@ class Map
       
       MazeCell curCel = mazecells.get(int(random(rows))).get(int(random(cols)));
       frontier.add(curCel);
-      
+      //walls.add(new Wall(new PVector(size*curCel.row, size*curCel.col),         new PVector(size*(curCel.row+1), size*curCel.col)));     // WALL1
+      walls.add(new Wall(new PVector(size*(curCel.row+1), size*curCel.col),     new PVector(size*(curCel.row+1), size*(curCel.col+1)))); // WALL2
+      walls.add(new Wall(new PVector(size*(curCel.row+1), size*(curCel.col+1)), new PVector(size*curCel.row, size*(curCel.col+1))));     // WALL3
+      //walls.add(new Wall(new PVector(size*curCel.row, size*(curCel.col+1)),     new PVector(size*curCel.row, size*curCel.col)));         // WALL4
+    
       while(curCel.visited == false){
       curCel.visited = true;
       done.add(curCel);
@@ -131,18 +135,26 @@ class Map
         }
       }
       // add random cell to frontier
-      for(int i = 0; i < frontier.size(); i++){
         MazeCell newCel = frontier.get(int(random(frontier.size())));
-        if(!newCel.visited){
-          curCel.neighbors.add(newCel); //newCel might not be adjacent to curCel; have to fix
-          curCel = newCel;
-          break;
-        }else{
-          newCel = frontier.get(int(random(frontier.size())));
+        for(int j = 0; j < frontier.size(); j++){
+      if(newCel.visited == false){
+        curCel.neighbors.add(newCel);
+        curCel = newCel;
+        for(int i = 0; i < 2; i++){
+          //walls.add(new Wall(new PVector(size*curCel.row, size*curCel.col),         new PVector(size*(curCel.row+1), size*curCel.col)));     // WALL1
+          walls.add(new Wall(new PVector(size*(curCel.row+1), size*curCel.col),     new PVector(size*(curCel.row+1), size*(curCel.col+1)))); // WALL2
+          walls.add(new Wall(new PVector(size*(curCel.row+1), size*(curCel.col+1)), new PVector(size*curCel.row, size*(curCel.col+1))));     // WALL3
+          //walls.add(new Wall(new PVector(size*curCel.row, size*(curCel.col+1)),     new PVector(size*curCel.row, size*curCel.col)));         // WALL4
+    
         }
+        //print(walls.size());
+        
+        break;
+      }else{
+        newCel = frontier.get(int(random(frontier.size())));
       }
-      
-      }
+    }
+  }
       
       //choose random wall
       
@@ -206,7 +218,7 @@ class MazeCell
   MazeCell(int row, int col, PVector center) {
     this.row = row;
     this.col = col;
-    this.center = center;
+    this.center = center; 
   }
   
   // idk
