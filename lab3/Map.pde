@@ -63,7 +63,7 @@ class Map
       ArrayList<MazeCell> mazecellrow = new ArrayList<MazeCell>();
       
         for(int j = 0; j < cols; j++) { // height
-          mazecellrow.add(new MazeCell(i, j, new PVector(size*(i+0.5), size*(j+0.5)) ) );
+          mazecellrow.add(new MazeCell(i, j, new PVector(size*(i+0.5), size*(j+0.5)), size ) );
           
           // it was art and it was beautiful
           // POINT1------POINT2
@@ -155,6 +155,7 @@ class Map
           if(mazecells.get(r-1).get(c).visited) {
             randFrontier.neighbors.add(neighborCell);
             neighborCell.neighbors.add(randFrontier);
+            neighborCell.bottom = null;
             needsNeighbor = false;
           } else {
             MazeCell newCel = neighborCell;
@@ -168,19 +169,21 @@ class Map
           if(needsNeighbor && neighborCell.visited) {
             randFrontier.neighbors.add(neighborCell);
             neighborCell.neighbors.add(randFrontier);
+            neighborCell.right = null;
             needsNeighbor = false;
           } else {
             MazeCell newCel = neighborCell;
             frontier.add(newCel);
           }
         }
-        if(c+1 < cols) // add right neighbot (if exists + unvisited)
+        if(c+1 < cols) // add right neighbor (if exists + unvisited)
         {
           MazeCell neighborCell = mazecells.get(r).get(c+1);
           
           if(needsNeighbor && neighborCell.visited) {
             randFrontier.neighbors.add(neighborCell);
             neighborCell.neighbors.add(randFrontier);
+            randFrontier.right = null;
             needsNeighbor = false;
           } else {
             MazeCell newCel = neighborCell;
@@ -194,6 +197,7 @@ class Map
           if(needsNeighbor && neighborCell.visited) {
             randFrontier.neighbors.add(neighborCell);
             neighborCell.neighbors.add(randFrontier);
+            randFrontier.bottom = null;
             needsNeighbor = false;
           } else {
             MazeCell newCel = neighborCell;
@@ -215,7 +219,7 @@ class Map
           int nrow = mazecells.get(i).get(j).neighbors.get(0).row;
           int ncol = mazecells.get(i).get(j).neighbors.get(0).col;
           
-          if(ncol - c == -1 && nrow - r == 0){
+          /*if(ncol - c == -1 && nrow - r == 0){
             walls.add(new Wall(new PVector(size*(r+1), size*c),     new PVector(size*(r+1), size*(c+1)))); // WALL2
             walls.add(new Wall(new PVector(size*(r+1), size*(c+1)), new PVector(size*r, size*(c+1))));     // WALL3
           }
@@ -228,7 +232,7 @@ class Map
           else{
             //walls.add(new Wall(new PVector(size*(r+1), size*c),     new PVector(size*(r+1), size*(c+1)))); // WALL2
             //walls.add(new Wall(new PVector(size*(r+1), size*(c+1)), new PVector(size*r, size*(c+1))));     // WALL3
-          }
+          }*/
           
         }      
       }
@@ -247,6 +251,12 @@ class Map
       {
          w.draw();
       }
+      if(mazecells != null) {
+        line(0,0,0,GRID_SIZE*mazecells.get(0).size()); //top
+        line(0,GRID_SIZE*mazecells.get(0).size(),GRID_SIZE*mazecells.size(),GRID_SIZE*mazecells.get(0).size()); //right
+        line(GRID_SIZE*mazecells.size(),0,GRID_SIZE*mazecells.size(),GRID_SIZE*mazecells.get(0).size()); //bpttom
+        line(0,0,GRID_SIZE*mazecells.size(),0); //left
+      }
       
       /*for(ArrayList<MazeCell> r : mazecells) {
         for(MazeCell c : r) {
@@ -260,6 +270,12 @@ class Map
       
       stroke(255, 150, 150);
       for(MazeCell m : done) {
+        if(m.bottom != null){
+          walls.add(m.bottom);
+        }
+        if(m.right != null){
+          walls.add(m.right);
+        }
         for(MazeCell n : m.neighbors) {
           line(m.center.x, m.center.y, n.center.x, n.center.y);
           //println("i");
@@ -274,16 +290,25 @@ class MazeCell
   ArrayList<MazeCell> neighbors = new ArrayList<MazeCell>();
   int row;
   int col;
-  String from = "";
+  Wall bottom;
+  Wall right;
+  Wall left;
+  Wall top;
   PVector center;
   
   MazeCell() {   
   }
   
-  MazeCell(int row, int col, PVector center) {
+  MazeCell(int row, int col, PVector center, int size) {
     this.row = row;
     this.col = col;
     this.center = center; 
+    right = new Wall(new PVector(size*(row+1), size*col),     new PVector(size*(row+1), size*(col+1))); // WALL2
+    bottom = new Wall(new PVector(size*(row+1), size*(col+1)), new PVector(size*row, size*(col+1)));     // WALL3
+    left = new Wall(new PVector(size*row, size*(col+1)),     new PVector(size*row, size*col));         // WALL4
+    top = new Wall(new PVector(size*row, size*col),         new PVector(size*(row+1), size*col));     // WALL1
+
+
   }
   
   // idk
