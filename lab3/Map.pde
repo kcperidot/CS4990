@@ -91,19 +91,19 @@ class Map
       frontier = new ArrayList<MazeCell>();
       done = new ArrayList<MazeCell>();
       
-      
+      // 1. pick a random point
       MazeCell curCel = mazecells.get(int(random(rows))).get(int(random(cols)));
       frontier.add(curCel);
       //walls.add(new Wall(new PVector(size*curCel.row, size*curCel.col),         new PVector(size*(curCel.row+1), size*curCel.col)));     // WALL1
       //walls.add(new Wall(new PVector(size*(curCel.row+1), size*curCel.col),     new PVector(size*(curCel.row+1), size*(curCel.col+1)))); // WALL2
       //walls.add(new Wall(new PVector(size*(curCel.row+1), size*(curCel.col+1)), new PVector(size*curCel.row, size*(curCel.col+1))));     // WALL3
       //walls.add(new Wall(new PVector(size*curCel.row, size*(curCel.col+1)),     new PVector(size*curCel.row, size*curCel.col)));         // WALL4
-    
-      while(frontier.size() > 0){
+      
+      // 2. add point to maze
       curCel.visited = true;
       done.add(curCel);
-      frontier.remove(curCel);
       
+      // 3. add neighbors to frontier
       int r = curCel.row;
       int c = curCel.col;
       if(r-1 >= 0) // add top neighbor (if exists + unvisited)
@@ -134,104 +134,78 @@ class Map
           frontier.add(newCel);
         }
       }
-      // add random cell to frontier
-      if(frontier.size() == 0){
-      break;
-      }
-      MazeCell newCel = frontier.get(int(random(frontier.size())));
-      r = newCel.row;
-      c = newCel.col;
-      boolean y = false;
-      if(r-1 >= 0) // add top neighbor (if exists + unvisited)
-      {
-        MazeCell newCel2 = mazecells.get(r-1).get(c);
-        if(!y && newCel2.visited) {
-          newCel.neighbors.add(newCel2);
-          newCel2.neighbors.add(newCel);
-          y = true;
+    
+    while(frontier.size() > 0) {
+      // 4. pick random frontier cell
+      int frontierNo = (int) random(frontier.size());
+      MazeCell randFrontier = frontier.get(frontierNo);
+      
+      if(!randFrontier.visited) {
+                
+        // 5. Connect to adjacent cell in maze OR
+        // 6. Add neighbors to frontier
+        r = randFrontier.row;
+        c = randFrontier.col;
+        boolean needsNeighbor = true;
+        
+        if(r-1 >= 0) // check top neighbor (if exists + unvisited)
+        {
+          MazeCell neighborCell = mazecells.get(r-1).get(c);
+          
+          if(mazecells.get(r-1).get(c).visited) {
+            randFrontier.neighbors.add(neighborCell);
+            neighborCell.neighbors.add(randFrontier);
+            needsNeighbor = false;
+          } else {
+            MazeCell newCel = neighborCell;
+            frontier.add(newCel);
+          }
+        }      
+        if(c-1 >= 0) // add left neighbot (if exists + unvisited)
+        {
+          MazeCell neighborCell = mazecells.get(r).get(c-1);
+          
+          if(needsNeighbor && neighborCell.visited) {
+            randFrontier.neighbors.add(neighborCell);
+            neighborCell.neighbors.add(randFrontier);
+            needsNeighbor = false;
+          } else {
+            MazeCell newCel = neighborCell;
+            frontier.add(newCel);
+          }
         }
-      }      
-      if(c-1 >= 0) // add left neighbot (if exists + unvisited)
-      {
-        MazeCell newCel2 = mazecells.get(r).get(c-1);
-        if(!y && newCel2.visited) {
-          newCel.neighbors.add(newCel2);
-          newCel2.neighbors.add(newCel);
-          y = true;
+        if(c+1 < cols) // add right neighbot (if exists + unvisited)
+        {
+          MazeCell neighborCell = mazecells.get(r).get(c+1);
+          
+          if(needsNeighbor && neighborCell.visited) {
+            randFrontier.neighbors.add(neighborCell);
+            neighborCell.neighbors.add(randFrontier);
+            needsNeighbor = false;
+          } else {
+            MazeCell newCel = neighborCell;
+            frontier.add(newCel);
+          }
         }
-      }
-      if(c+1 < cols) // add right neighbot (if exists + unvisited)
-      {
-        MazeCell newCel2 = mazecells.get(r).get(c+1);
-        if(!y && newCel2.visited) {
-          newCel.neighbors.add(newCel2);
-          newCel2.neighbors.add(newCel);
-          y = true;
-        }
-      }
-      if(r+1 < rows) // add bottom neighbor (if exists + unvisited)
-      {
-        MazeCell newCel2 = mazecells.get(r+1).get(c);
-        if(!y && newCel2.visited) {
-          newCel.neighbors.add(newCel2);
-          newCel2.neighbors.add(newCel);
-          y = true;
-        }
-      }
-      for(int j = 0; j < frontier.size(); j++){
-      if(newCel.visited == false){
-        if(newCel.row - curCel.row == 0 && newCel.col - curCel.col == -1){
-        curCel.neighbors.add(newCel);
-        newCel.from = "E";
-        newCel.neighbors.add(curCel);        
-        }
-        if(newCel.row - curCel.row == 0 && newCel.col - curCel.col == 1){
-        curCel.neighbors.add(newCel);
-        newCel.from = "W";
-        newCel.neighbors.add(curCel);
-        }
-        if(newCel.col - curCel.col == 0 && newCel.row - curCel.row == -1){
-        curCel.neighbors.add(newCel);
-        newCel.from = "S";
-        newCel.neighbors.add(curCel);
-        }
-        if(newCel.col - curCel.col == 0 && newCel.row - curCel.row == 1){
-        curCel.neighbors.add(newCel);
-        newCel.from = "N";
-        newCel.neighbors.add(curCel);
+        if(r+1 < rows) // add bottom neighbor (if exists + unvisited)
+        {
+          MazeCell neighborCell = mazecells.get(r+1).get(c);
+          
+          if(needsNeighbor && neighborCell.visited) {
+            randFrontier.neighbors.add(neighborCell);
+            neighborCell.neighbors.add(randFrontier);
+            needsNeighbor = false;
+          } else {
+            MazeCell newCel = neighborCell;
+            frontier.add(newCel);
+          }
         }
         
-        if(newCel.from.equals("E") || newCel.from.equals("W")){
-        walls.add(new Wall(new PVector(size*(r+1), size*c),     new PVector(size*(r+1), size*(c+1)))); // WALL2
-        walls.add(new Wall(new PVector(size*curCel.row, size*(curCel.col+1)),     new PVector(size*curCel.row, size*curCel.col)));         // WALL4
-        }
-        if(newCel.from.equals("N") || newCel.from.equals("S")){
-        walls.add(new Wall(new PVector(size*curCel.row, size*curCel.col),         new PVector(size*(curCel.row+1), size*curCel.col)));     // WALL1
-        walls.add(new Wall(new PVector(size*(r+1), size*(c+1)), new PVector(size*r, size*(c+1))));     // WALL3
-        }
-
-        curCel = newCel;
-        //print(walls.size());  
-        break;
-      }else{
-        newCel = frontier.get(int(random(frontier.size())));
-        frontier.remove(newCel);
+        randFrontier.visited = true;
+        done.add(randFrontier);
       }
+      frontier.remove(frontierNo);
     }
-  }
-      
-      //choose random wall
-      
-      //check if node on other side has been visited
-      //if not, add connection
-      /*MazeCell next = frontier.get((int)random(4));
-      if(!next.visited){
-        curCel = next;
-        next.visited = true;
-        frontier.add();
-      }*/
-      
-      //remove wall from frontier
       
    }
    
