@@ -139,6 +139,45 @@ class Map
       break;
       }
       MazeCell newCel = frontier.get(int(random(frontier.size())));
+      r = newCel.row;
+      c = newCel.col;
+      boolean y = false;
+      if(r-1 >= 0) // add top neighbor (if exists + unvisited)
+      {
+        MazeCell newCel2 = mazecells.get(r-1).get(c);
+        if(!y && newCel2.visited) {
+          newCel.neighbors.add(newCel2);
+          newCel2.neighbors.add(newCel);
+          y = true;
+        }
+      }      
+      if(c-1 >= 0) // add left neighbot (if exists + unvisited)
+      {
+        MazeCell newCel2 = mazecells.get(r).get(c-1);
+        if(!y && newCel2.visited) {
+          newCel.neighbors.add(newCel2);
+          newCel2.neighbors.add(newCel);
+          y = true;
+        }
+      }
+      if(c+1 < cols) // add right neighbot (if exists + unvisited)
+      {
+        MazeCell newCel2 = mazecells.get(r).get(c+1);
+        if(!y && newCel2.visited) {
+          newCel.neighbors.add(newCel2);
+          newCel2.neighbors.add(newCel);
+          y = true;
+        }
+      }
+      if(r+1 < rows) // add bottom neighbor (if exists + unvisited)
+      {
+        MazeCell newCel2 = mazecells.get(r+1).get(c);
+        if(!y && newCel2.visited) {
+          newCel.neighbors.add(newCel2);
+          newCel2.neighbors.add(newCel);
+          y = true;
+        }
+      }
       for(int j = 0; j < frontier.size(); j++){
       if(newCel.visited == false){
         if(newCel.row - curCel.row == 0 && newCel.col - curCel.col == -1){
